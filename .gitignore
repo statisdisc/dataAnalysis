@@ -1,7 +1,8 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# Ignore images for the README
+!readmeImages/
+
+# Data files too large for online storage
+*.nc
 
 # Images
 *.png
@@ -11,6 +12,11 @@ __pycache__/
 *.tif
 *.gif
 *.gifv
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
 # C extensions
 *.so
