@@ -1,5 +1,5 @@
-# Ignore images for the README
-!readmeImages/
+# Add files for README no matter the restrictions
+!readmeImages/*
 
 # Data files too large for online storage
 *.nc
