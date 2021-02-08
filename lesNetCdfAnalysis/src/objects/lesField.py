@@ -15,9 +15,9 @@ class lesField:
         self.t = data.variables["TIME"][:][indexTime]*1
 
         # Range of x, y and z values
-        self.x = data.variables["X"][:][indexTime]*1
-        self.y = data.variables["Y"][:][indexTime]*1
-        self.z = data.variables["Z"][:][indexTime]*1
+        self.x = data.variables["X"][:]*1
+        self.y = data.variables["Y"][:]*1
+        self.z = data.variables["Z"][:]*1
         
         # Data for all cells
         if dataOverride == []:
