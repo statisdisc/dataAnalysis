@@ -4,4 +4,4 @@ The analysis shows some clear annual trends. The main conclusion is that it is a
 
 
 ## Output
-<img src="AnnualCaseVariation.png">
+<img src="../readmeImages/AnnualCaseVariation.png">
