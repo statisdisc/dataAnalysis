@@ -5,12 +5,11 @@ The plots also include a histogram for the updraft component.
 import os
 import sys
 import time
-import numpy as np
 
 # User-made modules
 sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
 from src.objects.folders import folders
-from src.objects.lesData import lesData
+from src.utilities.makeGif import makeGif
 from src.utilities.getLesData import getLesData
 from src.plots.plotHistogram import plotLayerHistogram
 
@@ -41,7 +40,7 @@ def main():
             title = "z = {:.2f}km (id={})".format(layer, k+1)
             print "Layer {} ({:.3f}km)".format(k+1, layer)
             
-            # Histogram for vertical velocity, w
+            '''# Histogram for vertical velocity, w
             plotLayerHistogram(
                 snapshot.w, 
                 snapshot.I2, 
@@ -79,8 +78,42 @@ def main():
                 k,
                 title=title,
                 folder=os.path.join(folderTime, snapshot.ql.name)
-            )
+            )'''
     
+    # Remove les data to clear memory
+    totalTimesteps = len(les.t)
+    totalImages = min(len(snapshot.z), 150) 
+    del les
+    del snapshot
+    
+    # Create gif animations for generated plots
+    for n in xrange(totalTimesteps):
+        folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
+        imageListW = []
+        imageListTheta = []
+        imageListQv = []
+        imageListQl = []
+        
+        for k in xrange(totalImages):
+            imageListW.append(
+                os.path.join(os.path.join(folderTime, "w"), "histogram_w_{}.png".format(k+1))
+            )
+            imageListTheta.append(
+                os.path.join(os.path.join(folderTime, "theta"), "histogram_theta_{}.png".format(k+1))
+            )
+            imageListQv.append(
+                os.path.join(os.path.join(folderTime, "qv"), "histogram_qv_{}.png".format(k+1))
+            )
+            imageListQl.append(
+                os.path.join(os.path.join(folderTime, "ql"), "histogram_ql_{}.png".format(k+1))
+            )
+        
+        makeGif("histogram_w.gif", imageListW, folder=folderTime, delay=8)
+        makeGif("histogram_theta.gif", imageListTheta, folder=folderTime, delay=8)
+        makeGif("histogram_qv.gif", imageListQv, folder=folderTime, delay=8)
+        makeGif("histogram_ql.gif", imageListQl, folder=folderTime, delay=8)
+
+
 
 if __name__ == "__main__":
     timeInit = time.time()

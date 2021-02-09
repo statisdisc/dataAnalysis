@@ -22,38 +22,49 @@ class lesDataSnapshot:
         self.zv = data.variables["Z2"][:]*1
         
         # Data for all cells
-        # Velocity component in the x-direction
-        self.u = lesField("U", "u", data, indexTime)
-        # Velocity component in the y-direction
-        self.v = lesField("V", "v", data, indexTime)
-        # Velocity component in the z-direction (vertical velocity)
-        self.w = lesField("W", "w", data, indexTime)
-        # Potential temperature
-        self.theta = lesField("THETA", "theta", data, indexTime)
-        # Water vapour
-        self.qv = lesField("Q01", "qv", data, indexTime)
-        # Liquid water
-        self.ql = lesField("Q02", "ql", data, indexTime)
-        # Radioactive tracer for shallow convection (timescale 15 mins)
-        self.rts = lesField("Q03", "rts", data, indexTime)
-        # Radioactive tracer for deep convection (timescale 35 mins)
-        self.rtd = lesField("Q04", "rtd", data, indexTime)
         
         # Diagnose indicator function which shows the locations of the updraft fluid (fluid 2)
         if indicatorType == "shallow":
             self.I2 = lesField(
                 "I2", "I2", data, indexTime, 
-                dataOverride=self.getUpdraftIndicator(self.rts.field)
+                dataOverride=self.getUpdraftIndicator(
+                    data.variables["Q03"][indexTime],
+                    data.variables["W"][indexTime]
+                )
             )
         elif indicatorType == "deep":
             self.I2 = lesField(
                 "I2", "I2", data, indexTime, 
-                dataOverride=self.getUpdraftIndicator(self.rtd.field)
+                dataOverride=self.getUpdraftIndicator(
+                    data.variables["Q04"][indexTime],
+                    data.variables["W"][indexTime]
+                )
             )
         else:
+            self.I2 = []
             warnings.warn("No matching indicator type '{}'. I2 not available".format(indicatorType))
+        
+        
+        # Velocity component in the x-direction
+        self.u = lesField("U", "u", data, indexTime, I2=self.I2)
+        # Velocity component in the y-direction
+        self.v = lesField("V", "v", data, indexTime, I2=self.I2)
+        # Velocity component in the z-direction (vertical velocity)
+        self.w = lesField("W", "w", data, indexTime, I2=self.I2)
+        # Potential temperature
+        self.theta = lesField("THETA", "theta", data, indexTime, I2=self.I2)
+        # Water vapour
+        self.qv = lesField("Q01", "qv", data, indexTime, I2=self.I2)
+        # Liquid water
+        self.ql = lesField("Q02", "ql", data, indexTime, I2=self.I2)
+        # Radioactive tracer for shallow convection (timescale 15 mins)
+        self.rts = lesField("Q03", "rts", data, indexTime, I2=self.I2)
+        # Radioactive tracer for deep convection (timescale 35 mins)
+        self.rtd = lesField("Q04", "rtd", data, indexTime, I2=self.I2)
+        
+        
     
-    def getUpdraftIndicator(self, q):
+    def getUpdraftIndicator(self, q, w):
         "Get updraft indicator function for a given radioactive tracer q."
         
         #Mean of each horizontal slice
@@ -76,6 +87,6 @@ class lesDataSnapshot:
         
         # Conditions for updraft, from Efstathiou et al. 2019
         condition1 = qCondition > 0.
-        condition2 = self.w.field > 0.
+        condition2 = w > 0.
         
         return condition1*condition2
