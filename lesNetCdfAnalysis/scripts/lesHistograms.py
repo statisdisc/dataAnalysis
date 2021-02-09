@@ -40,7 +40,7 @@ def main():
             title = "z = {:.2f}km (id={})".format(layer, k+1)
             print "Layer {} ({:.3f}km)".format(k+1, layer)
             
-            '''# Histogram for vertical velocity, w
+            # Histogram for vertical velocity, w
             plotLayerHistogram(
                 snapshot.w, 
                 snapshot.I2, 
@@ -78,7 +78,7 @@ def main():
                 k,
                 title=title,
                 folder=os.path.join(folderTime, snapshot.ql.name)
-            )'''
+            )
     
     # Remove les data to clear memory
     totalTimesteps = len(les.t)

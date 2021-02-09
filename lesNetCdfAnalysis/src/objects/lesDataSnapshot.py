@@ -7,7 +7,7 @@ import numpy as np
 from lesField import lesField
 
 class lesDataSnapshot:
-    def __init__(self, data, indexTime, indicatorType="shallow"):
+    def __init__(self, data, indexTime, indicatorType="shallow", indicatorFunction="plume"):
         # Time
         self.t = data.variables["TIME"][:][indexTime]*1
 
@@ -20,6 +20,9 @@ class lesDataSnapshot:
         self.xv = data.variables["X2"][:]*1
         self.yv = data.variables["Y2"][:]*1
         self.zv = data.variables["Z2"][:]*1
+        
+        # Definition for partitioning of fluid
+        self.indicatorFunction = indicatorFunction
         
         # Data for all cells
         
@@ -67,26 +70,37 @@ class lesDataSnapshot:
     def getUpdraftIndicator(self, q, w):
         "Get updraft indicator function for a given radioactive tracer q."
         
-        #Mean of each horizontal slice
-        qMean = np.mean(q, axis=(1,2))
-        
-        #Standard deviation of each horizontal slice
-        qStdv = np.std(q, axis=(1,2))
-        
-        #Sum of all previous elements in array (including current)
-        qStdvIntegral = np.cumsum(qStdv)
-        
-        qStdvMax = np.maximum(qStdv, qStdvIntegral)
-        
-        #Transform array to be compatible with 3D array
-        qMean = qMean.reshape((len(qMean),1))
-        qStdv = qStdv.reshape((len(qStdv),1))
-        qStdvMax = qStdv.reshape((len(qStdvMax),1))
+        if self.indicatorFunction == "none":
+            # No partition of fluids
+            return np.ones_like(w)
+        elif self.indicatorFunction == "basic":
+            # Partition fluids based on vertical velocity
+            return w > 0.
+        elif self.indicatorFunction == "plume":
+            # Partition fluids based on clouds and thermal structures in the atmosphere
+            
+            #Mean of each horizontal slice
+            qMean = np.mean(q, axis=(1,2))
+            
+            #Standard deviation of each horizontal slice
+            qStdv = np.std(q, axis=(1,2))
+            
+            #Sum of all previous elements in array (including current)
+            qStdvIntegral = np.cumsum(qStdv)
+            
+            qStdvMax = np.maximum(qStdv, qStdvIntegral)
+            
+            #Transform array to be compatible with 3D array
+            qMean = qMean.reshape((len(qMean),1))
+            qStdv = qStdv.reshape((len(qStdv),1))
+            qStdvMax = qStdv.reshape((len(qStdvMax),1))
 
-        qCondition = q - qMean[:,None] - qStdvMax[:,None]
-        
-        # Conditions for updraft, from Efstathiou et al. 2019
-        condition1 = qCondition > 0.
-        condition2 = w > 0.
-        
-        return condition1*condition2
+            qCondition = q - qMean[:,None] - qStdvMax[:,None]
+            
+            # Conditions for updraft, from Efstathiou et al. 2019
+            condition1 = qCondition > 0.
+            condition2 = w > 0.
+            
+            return condition1*condition2
+        else:
+            return np.ones_like(w)

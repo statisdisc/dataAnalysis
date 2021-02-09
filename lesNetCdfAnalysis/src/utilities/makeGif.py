@@ -28,7 +28,7 @@ def makeGif(
     
     # Create temporary smaller gifs due to command line and memory restrictions
     temporaryGifs = []
-    for i in xrange(len(imageList)/subGifLimit):
+    for i in xrange((len(imageList)-1)/subGifLimit + 1):
         start = i*subGifLimit
         finish = min((i+1)*subGifLimit, len(imageList))
         
@@ -49,16 +49,21 @@ def makeGif(
         os.system(console)
             
             
+    if len(imageList)/subGifLimit > 1:
+        print "Stiching all gifs together"
+        console = "{} ".format(convert)
+        for filename in temporaryGifs:
+            console += "{} ".format(filename)
+        filenameGif = os.path.join(folderGif, filenameFinal)
+        console += "{} ".format(filenameGif)
+        os.system(console)
         
-    print "Stiching all gifs together"
-    console = "{} ".format(convert)
-    for filename in temporaryGifs:
-        console += "{} ".format(filename)
-    filenameGif = os.path.join(folderGif, filenameFinal)
-    console += "{} ".format(filenameGif)
-    os.system(console)
+        # Delete temporary gifs
+        for filename in temporaryGifs:
+            print "Deleting {}".format(filename)
+            os.remove(filename)
+    else:
+        console = "mv {} {}".format(filenameGif, os.path.join(folderGif, filenameFinal))
+        os.system(console)
     
-    # Delete temporary gifs
-    for filename in temporaryGifs:
-        print "Deleting {}".format(filename)
-        os.remove(filename)
+    

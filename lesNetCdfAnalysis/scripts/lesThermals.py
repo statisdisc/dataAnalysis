@@ -10,6 +10,7 @@ import time
 # User-made modules
 sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
 from src.objects.folders import folders
+from src.utilities.makeGif import makeGif
 from src.utilities.getLesData import getLesData
 from src.plots.plotThermalContour import plotThermalContour
 
@@ -34,11 +35,14 @@ def main():
         
         snapshot = les.data[n]
         
+        # Which layers of the 3D data set do we want to plot?
+        imagesIndices = range(0, min(len(snapshot.x),len(snapshot.y)), 10)
+        
         # Plot slices at fixed locations on the y-axis
-        for j in xrange(0, len(snapshot.y), 10):
+        for j in imagesIndices:
             layer = snapshot.y[j]*1e-3
             title = "y = {:.2f}km (id={})".format(layer, j+1)
-            print "Layer {} ({:.3f}km)".format(j+1, layer)
+            print "XZ layer {} ({})".format(j+1, title)
             
             # Plot with only clouds
             plotThermalContour(
@@ -79,10 +83,10 @@ def main():
             # break
         
         # Plot slices at fixed locations on the x-axis
-        for i in xrange(0, len(snapshot.x), 10):
+        for i in imagesIndices:
             layer = snapshot.x[i]*1e-3
             title = "x = {:.2f}km (id={})".format(layer, i+1)
-            print "Layer {} ({:.3f}km)".format(i+1, layer)
+            print "YZ layer {} ({})".format(i+1, title)
             
             # Plot with only clouds
             plotThermalContour(
@@ -119,6 +123,64 @@ def main():
                 I2=snapshot.I2.field[:,:,i],
                 w=snapshot.w.field[:,:,i]
             )
+    
+    
+    # Remove les data to clear memory
+    totalTimesteps = len(les.t)
+    del les
+    del snapshot
+    
+    # Create gif animations for generated plots
+    for n in xrange(totalTimesteps):
+        folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
+        imageListContourXZ = []
+        imageListContourYZ = []
+        
+        for k in imagesIndices:
+            print k
+            imageListContourXZ = []
+            imageListContourYZ = []
+            
+            imageListContourXZ.append(
+                os.path.join(
+                    os.path.join(folderTime, "contourCloud"), 
+                    "contour_{}_xz_cloud.png".format(k)
+                )
+            )
+            imageListContourXZ.append(
+                os.path.join(
+                    os.path.join(folderTime, "contourCloud"), 
+                    "contour_{}_xz_cloud+thermal.png".format(k)
+                )
+            )
+            imageListContourXZ.append(
+                os.path.join(
+                    os.path.join(folderTime, "contourCloud"), 
+                    "contour_{}_xz_cloud+thermal+updraft.png".format(k)
+                )
+            )
+            
+            imageListContourYZ.append(
+                os.path.join(
+                    os.path.join(folderTime, "contourCloud"), 
+                    "contour_{}_yz_cloud.png".format(k)
+                )
+            )
+            imageListContourYZ.append(
+                os.path.join(
+                    os.path.join(folderTime, "contourCloud"), 
+                    "contour_{}_yz_cloud+thermal.png".format(k)
+                )
+            )
+            imageListContourYZ.append(
+                os.path.join(
+                    os.path.join(folderTime, "contourCloud"), 
+                    "contour_{}_yz_cloud+thermal+updraft.png".format(k)
+                )
+            )
+        
+            makeGif("contour_{}_xz.gif".format(k), imageListContourXZ, folder=folderTime, delay=200)
+            makeGif("contour_{}_yz.gif".format(k), imageListContourYZ, folder=folderTime, delay=200)
 
 if __name__ == "__main__":
     timeInit = time.time()

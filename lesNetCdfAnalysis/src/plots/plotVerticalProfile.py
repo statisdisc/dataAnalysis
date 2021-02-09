@@ -25,7 +25,7 @@ def plotVolumeFraction(
     ax0.plot(I2.av, z, "r")
     
     # Limits and labels
-    ax0.set_xlim(0., 0.5)
+    ax0.set_xlim(0., 1.)
     ax0.set_ylim(np.min(z), np.max(z))
     ax0.set_xlabel("$\\sigma_2$")
     ax0.set_ylabel("z (km)")
