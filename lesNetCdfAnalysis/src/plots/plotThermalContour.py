@@ -16,23 +16,25 @@ plt.rcParams["font.family"] = "serif"
 
 def plotThermalContour(
         x, y, ql,
+        showMesh=False,
         id="", 
         title="", 
-        xlabel="", 
+        xlabel="",
+        dpi=200,
         folder="", 
         I2=[], 
         w=[], 
         cbarScale="logarithmic"
     ):
     
-    fig, ax0 = plt.subplots(1,1,figsize=(16,4))#, gridspec_kw={'width_ratios': [10, 1]})
+    fig, ax = plt.subplots(1,1,figsize=(16,4))
     
     # Plot regions where clouds exist (based on liquid water, ql)
     if cbarScale == "logarithmic":
-        c = ax0.pcolor(x, y, np.log10(ql), cmap='binary_r', vmin=-5, vmax=-3)
+        c = ax.pcolor(x, y, np.log10(ql), cmap='binary_r', vmin=-5, vmax=-3)
     else:
-        c = ax0.pcolor(x, y, ql, cmap='binary_r', vmin=1e-5, vmax=1e-3)
-    # fig.colorbar(c, ax=ax0)
+        c = ax.pcolor(x, y, ql, cmap='binary_r', vmin=1e-5, vmax=1e-3)
+    # fig.colorbar(c, ax=ax)
     
     # Plot contours for the structure of the thermals
     if I2 != []:
@@ -40,10 +42,10 @@ def plotThermalContour(
         
         # Fill regions
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", [(0., 0., 0., 0.), (1., 0., 0., 0.3)])
-        ax0.contourf(X, Y, I2, 2, cmap=cmap, vmin=0., vmax=1.1, linewidths=(0,0))
+        ax.contourf(X, Y, I2, 2, cmap=cmap, vmin=0., vmax=1.1, linewidths=(0,0))
         
         # Outline regions
-        ax0.contour(X, Y, I2, levels=[0.9], colors=[(1.,0.,0.)], linewidths=[1.])
+        ax.contour(X, Y, I2, levels=[0.9], colors=[(1.,0.,0.)], linewidths=[1.])
         
     
     # Plot contours for regions of ascending air
@@ -52,17 +54,27 @@ def plotThermalContour(
         
         # Fill regions
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", [(0., 0., 0., 0.), (1., 1., 1., 0.3)])
-        ax0.contourf(X, Y, w, 2, cmap=cmap, vmin=-1e-5, vmax=1e-5, linewidths=(0,0))
+        ax.contourf(X, Y, w, 2, cmap=cmap, vmin=-1e-5, vmax=1e-5, linewidths=(0,0))
         
         # Outline regions
-        ax0.contour(X, Y, w, levels=[0.], colors=[(1.,1.,1.)], linewidths=[1.])
+        ax.contour(X, Y, w, levels=[0.], colors=[(1.,1.,1.)], linewidths=[1.])
+    
+    # Show the mesh for the Large Eddy Simulation
+    if showMesh:
+        xMin, xMax = np.min(x), np.max(x)
+        yMin, yMax = np.min(y), np.max(y)
         
+        for i in xrange(len(x)):
+            ax.plot([x[i], x[i]], [yMin, yMax], "k", linewidth=0.2, alpha=0.5)
+        
+        for j in xrange(len(y)):
+            ax.plot([xMin, xMax], [y[j], y[j]], "k", linewidth=0.2, alpha=0.5)
     
     # Limits and labels
-    ax0.set_xlim(-10., 10.)
-    ax0.set_ylim(0., 3.)
-    ax0.set_xlabel(xlabel)
-    ax0.set_ylabel("z (km)")
+    ax.set_xlim(-10., 10.)
+    ax.set_ylim(0., 3.)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("z (km)")
     plt.title(title)
     
     # Ensure x and y axis are the same scale
@@ -76,6 +88,6 @@ def plotThermalContour(
     plt.savefig(
         os.path.join(folderCloud, "contour_{}.png".format(id)), 
         bbox_inches="tight", 
-        dpi=100
+        dpi=dpi
     )
     plt.close()

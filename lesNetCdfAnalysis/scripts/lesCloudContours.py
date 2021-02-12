@@ -67,6 +67,18 @@ def main():
                 I2=snapshot.I2.field[:,j,:]
             )
             
+            # Plot including regions of positive vertical velocity (updrafts)
+            plotThermalContour(
+                snapshot.x*1e-3,
+                snapshot.z*1e-3,
+                snapshot.ql.field[:,j,:],
+                id="{}_xz_cloud+updraft".format(j),
+                title=title,
+                xlabel="x (km)",
+                folder=folderTime,
+                w=snapshot.w.field[:,j,:]
+            )
+            
             # Plot including structure of thermals and vertical velocity
             plotThermalContour(
                 snapshot.x*1e-3,
@@ -109,6 +121,18 @@ def main():
                 xlabel="y (km)",
                 folder=folderTime,
                 I2=snapshot.I2.field[:,:,i]
+            )
+            
+            # Plot including regions of positive vertical velocity (updrafts)
+            plotThermalContour(
+                snapshot.y*1e-3,
+                snapshot.z*1e-3,
+                snapshot.ql.field[:,:,i],
+                id="{}_yz_cloud+updraft".format(i),
+                title=title,
+                xlabel="y (km)",
+                folder=folderTime,
+                w=snapshot.w.field[:,:,i]
             )
             
             # Plot including structure of thermals and vertical velocity
