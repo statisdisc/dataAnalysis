@@ -20,6 +20,8 @@ def plotTracer(
         xlabel="",
         dpi=200,
         folder="",
+        I2=[], 
+        w=[], 
         # cmap="binary_r"
         cmap="hot"
     ):
@@ -29,6 +31,29 @@ def plotTracer(
     # Plot tracer
     c = ax.pcolor(x, y, tracer, cmap=cmap, vmin=np.min(tracer), vmax=np.max(tracer))
     # fig.colorbar(c, ax=ax)
+    
+    # Plot contours for the structure of the thermals
+    if I2 != []:
+        X, Y = np.meshgrid(x, y)
+        
+        # Fill regions
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", [(0., 0., 0., 0.), (1., 0., 0., 0.3)])
+        ax.contourf(X, Y, I2, 2, cmap=cmap, vmin=0., vmax=1.1, linewidths=(0,0))
+        
+        # Outline regions
+        ax.contour(X, Y, I2, levels=[0.9], colors=[(1.,0.,0.)], linewidths=[1.])
+        
+    
+    # Plot contours for regions of ascending air
+    if w != []:
+        X, Y = np.meshgrid(x, y)
+        
+        # Fill regions
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", [(0., 0., 0., 0.), (1., 1., 1., 0.3)])
+        ax.contourf(X, Y, w, 2, cmap=cmap, vmin=-1e-5, vmax=1e-5, linewidths=(0,0))
+        
+        # Outline regions
+        ax.contour(X, Y, w, levels=[0.], colors=[(1.,1.,1.)], linewidths=[1.])
     
     # Show the mesh for the Large Eddy Simulation
     if showMesh:

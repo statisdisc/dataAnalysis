@@ -42,7 +42,7 @@ def main():
             title = "y = {:.2f}km (id={})".format(layer, j+1)
             print "XZ layer {} ({})".format(j+1, title)
             
-            # Plot with only clouds
+            # Plot radioactive tracer field
             plotTracer(
                 snapshot.x*1e-3,
                 snapshot.z*1e-3,
@@ -53,6 +53,19 @@ def main():
                 dpi=200,
                 folder=folderTime
             )
+            
+            # Plot radioactive tracer field with plume definition contour
+            plotTracer(
+                snapshot.x*1e-3,
+                snapshot.z*1e-3,
+                snapshot.rts.field[:,j,:],
+                id="{}_xz_rts+thermal".format(j),
+                title=title,
+                xlabel="x (km)",
+                dpi=200,
+                folder=folderTime,
+                I2=snapshot.I2.field[:,j,:]
+            )
         
         # Plot slices at fixed locations on the x-axis
         for i in imagesIndices:
@@ -60,7 +73,7 @@ def main():
             title = "x = {:.2f}km (id={})".format(layer, i+1)
             print "YZ layer {} ({})".format(i+1, title)
             
-            # Plot with only clouds
+            # Plot radioactive tracer field
             plotTracer(
                 snapshot.y*1e-3,
                 snapshot.z*1e-3,
@@ -70,6 +83,19 @@ def main():
                 xlabel="y (km)",
                 dpi=200,
                 folder=folderTime
+            )
+            
+            # Plot radioactive tracer field with plume definition contour
+            plotTracer(
+                snapshot.y*1e-3,
+                snapshot.z*1e-3,
+                snapshot.rts.field[:,:,i],
+                id="{}_yz_rts".format(i),
+                title=title,
+                xlabel="y (km)",
+                dpi=200,
+                folder=folderTime,
+                I2=snapshot.I2.field[:,:,i]
             )
     
     
