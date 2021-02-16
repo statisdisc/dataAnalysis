@@ -23,7 +23,7 @@ def plotLayerHistogram(field, fieldI2, layer, layerIndex, title="", folder=""):
     
     # Plot histograms
     tot, bins, patches = ax0.hist(data, bins=100, range=(field.min, field.max), facecolor="k", edgecolor="w")
-    tot, bins, patches = ax0.hist(updraftData, bins=100, range=(field.min, field.max), facecolor="k", edgecolor="r")
+    # tot, bins, patches = ax0.hist(updraftData, bins=100, range=(field.min, field.max), facecolor="k", edgecolor="r")
     
     # Limits and labels
     ax0.set_xlim(field.min, field.max)

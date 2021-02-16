@@ -12,6 +12,7 @@ from src.objects.folders import folders
 from src.utilities.getLesData import getLesData
 from src.plots.plotVerticalProfile import plotVolumeFraction
 from src.plots.plotVerticalProfile import plotVerticalProfile
+from src.plots.plotVerticalProfile import plotVerticalFluxes
 
 
 def main():
@@ -39,6 +40,7 @@ def main():
             folder=folderTime
         )
         
+        # Mean profiles
         plotVerticalProfile(
             snapshot.z*1e-3, snapshot.u,
             title="Horizontal velocity", 
@@ -81,6 +83,42 @@ def main():
             snapshot.z*1e-3, snapshot.ql,
             title="Liquid water", 
             xlabel="$q_l$ (kg/kg)", 
+            folder=folderTime
+        )
+        
+        # Vertical fluxes
+        plotVerticalFluxes(
+            snapshot.z*1e-3, snapshot.u,
+            title="Horizontal velocity fluxes", 
+            xlabel="$\\overline{w'u'}$ (m$^2$/s$^2$)", 
+            folder=folderTime
+        )
+        
+        plotVerticalFluxes(
+            snapshot.z*1e-3, snapshot.v,
+            title="Horizontal velocity fluxes", 
+            xlabel="$\\overline{w'v'}$ (m$^2$/s$^2$)", 
+            folder=folderTime
+        )
+        
+        plotVerticalFluxes(
+            snapshot.z*1e-3, snapshot.theta,
+            title="Potential temperature fluxes", 
+            xlabel="$\\overline{w'\\theta'}$ (K m/s)", 
+            folder=folderTime
+        )
+        
+        plotVerticalFluxes(
+            snapshot.z*1e-3, snapshot.qv,
+            title="Water vapour fluxes", 
+            xlabel="$\\overline{w'q_v'}$ (kg/kg m/s)", 
+            folder=folderTime
+        )
+        
+        plotVerticalFluxes(
+            snapshot.z*1e-3, snapshot.ql,
+            title="Liquid water fluces", 
+            xlabel="$\\overline{w'q_l'}$ (kg/kg m/s)", 
             folder=folderTime
         )
 

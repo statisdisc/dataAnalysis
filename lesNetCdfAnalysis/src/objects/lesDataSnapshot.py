@@ -24,8 +24,9 @@ class lesDataSnapshot:
         # Definition for partitioning of fluid
         self.indicatorFunction = indicatorFunction
         
-        # Data for all cells
-        
+        '''
+        Data for all cells
+        '''
         # Diagnose indicator function which shows the locations of the updraft fluid (fluid 2)
         if indicatorType == "shallow":
             self.I2 = lesField(
@@ -47,19 +48,18 @@ class lesDataSnapshot:
             self.I2 = []
             warnings.warn("No matching indicator type '{}'. I2 not available".format(indicatorType))
         
-        
-        # Velocity component in the x-direction
-        self.u = lesField("U", "u", data, indexTime, I2=self.I2)
-        # Velocity component in the y-direction
-        self.v = lesField("V", "v", data, indexTime, I2=self.I2)
         # Velocity component in the z-direction (vertical velocity)
         self.w = lesField("W", "w", data, indexTime, I2=self.I2)
+        # Velocity component in the x-direction
+        self.u = lesField("U", "u", data, indexTime, I2=self.I2, w=self.w)
+        # Velocity component in the y-direction
+        self.v = lesField("V", "v", data, indexTime, I2=self.I2, w=self.w)
         # Potential temperature
-        self.theta = lesField("THETA", "theta", data, indexTime, I2=self.I2)
+        self.theta = lesField("THETA", "theta", data, indexTime, I2=self.I2, w=self.w)
         # Water vapour
-        self.qv = lesField("Q01", "qv", data, indexTime, I2=self.I2)
+        self.qv = lesField("Q01", "qv", data, indexTime, I2=self.I2, w=self.w)
         # Liquid water
-        self.ql = lesField("Q02", "ql", data, indexTime, I2=self.I2)
+        self.ql = lesField("Q02", "ql", data, indexTime, I2=self.I2, w=self.w)
         # Radioactive tracer for shallow convection (timescale 15 mins)
         self.rts = lesField("Q03", "rts", data, indexTime, I2=self.I2)
         # Radioactive tracer for deep convection (timescale 35 mins)

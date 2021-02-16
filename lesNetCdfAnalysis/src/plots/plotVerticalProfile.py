@@ -19,6 +19,7 @@ def plotVolumeFraction(
         title="", 
         folder=""
     ):
+    print "Plotting volume fraction"
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
@@ -51,6 +52,7 @@ def plotVerticalProfile(
         folder="",
         plotZero=False
     ):
+    print "Plotting vertical mean profiles for field {}".format(field.name)
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
@@ -91,6 +93,53 @@ def plotVerticalProfile(
     
     # Create folder for image
     folderVertical = os.path.join(folder, "profilesVertical")
+    if not os.path.isdir(folderVertical):
+        os.makedirs(folderVertical)
+    
+    plt.savefig(
+        os.path.join(folderVertical, "profile_{}.png".format(field.name)), 
+        bbox_inches="tight", 
+        dpi=200
+    )
+    plt.close()
+
+# Plot the vertical fluxes
+def plotVerticalFluxes(
+        z, field,
+        title="", 
+        xlabel="", 
+        folder="",
+        plotZero=True
+    ):
+    print "Plotting vertical fluxes for field {}".format(field.name)
+    
+    fig, ax0 = plt.subplots(1,1,figsize=(5,4))
+    
+    if plotZero:
+        ax0.plot(0*z, z, "k:", linewidth=0.5)
+    
+    # Minimum and maximum range
+    ax0.plot(field.fluid1FluxSubgrid, z, "b", linewidth=2., alpha=0.3)
+    ax0.plot(field.fluid2FluxSubgrid, z, "r", linewidth=2., alpha=0.3)
+    
+    # Mean profiles
+    ax0.plot(field.fluid1FluxResolved, z, "b", linewidth=2.)
+    ax0.plot(field.fluid2FluxResolved, z, "r", linewidth=2.)
+        
+    
+    # Limits and labels
+    minMax = max(
+        abs(min(np.min(field.fluid1FluxResolved), np.min(field.fluid2FluxResolved))),
+        abs(max(np.max(field.fluid1FluxResolved), np.max(field.fluid2FluxResolved)))
+    )
+    ax0.set_xlim(-minMax, minMax)
+    ax0.set_ylim(np.min(z), np.max(z))
+    ax0.set_xlabel(xlabel)
+    ax0.set_ylabel("z (km)")
+    plt.title(title)
+    
+    # Create folder for image
+    folderVertical = os.path.join(folder, "profilesFluxes")
     if not os.path.isdir(folderVertical):
         os.makedirs(folderVertical)
     
