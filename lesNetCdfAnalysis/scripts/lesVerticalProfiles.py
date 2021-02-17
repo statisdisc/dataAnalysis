@@ -29,6 +29,8 @@ def main():
     
     # Create plots for each snapshot in time
     for n in xrange(len(les.t)):
+        print "Processing timestep {} (t = {:.2f}hrs)".format(n+1, float(les.t[n])/3600.)
+        
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
             os.makedirs(folderTime)
@@ -117,7 +119,7 @@ def main():
         
         plotVerticalFluxes(
             snapshot.z*1e-3, snapshot.ql,
-            title="Liquid water fluces", 
+            title="Liquid water fluxes", 
             xlabel="$\\overline{w'q_l'}$ (kg/kg m/s)", 
             folder=folderTime
         )

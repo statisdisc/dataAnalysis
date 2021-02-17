@@ -119,12 +119,16 @@ def plotVerticalFluxes(
         ax0.plot(0*z, z, "k:", linewidth=0.5)
     
     # Minimum and maximum range
-    ax0.plot(field.fluid1FluxSubgrid, z, "b", linewidth=2., alpha=0.3)
-    ax0.plot(field.fluid2FluxSubgrid, z, "r", linewidth=2., alpha=0.3)
+    ax0.plot(field.fluid1FluxSubgrid, z, "b", linewidth=1., alpha=0.3)
+    ax0.plot(field.fluid2FluxSubgrid, z, "r", linewidth=1., alpha=0.3)
     
     # Mean profiles
     ax0.plot(field.fluid1FluxResolved, z, "b", linewidth=2.)
     ax0.plot(field.fluid2FluxResolved, z, "r", linewidth=2.)
+    
+    # Toal fluxes (contributions should sum to the total)
+    # ax0.plot(field.flux, z, "k", linewidth=2.)
+    # ax0.plot(field.fluid1FluxResolved+field.fluid2FluxResolved+field.fluid1FluxSubgrid+field.fluid2FluxSubgrid, z, "#888888", linewidth=1.)
         
     
     # Limits and labels
@@ -132,10 +136,11 @@ def plotVerticalFluxes(
         abs(min(np.min(field.fluid1FluxResolved), np.min(field.fluid2FluxResolved))),
         abs(max(np.max(field.fluid1FluxResolved), np.max(field.fluid2FluxResolved)))
     )
-    ax0.set_xlim(-minMax, minMax)
+    ax0.set_xlim(-1.2*minMax, 1.2*minMax)
     ax0.set_ylim(np.min(z), np.max(z))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
+    ax0.tick_params(axis='both', labelsize=6)
     plt.title(title)
     
     # Create folder for image

@@ -50,6 +50,9 @@ class lesField:
             self.fluid2Min, self.fluid2Max = self.conditionalMinMax(  I2.field)
             
             if w != []:
+                # Total flux across all fluids
+                self.flux = self.fluxAll(np.ones_like(I2.field), self.av, w.field, w.av)
+                
                 # Resolved fluxes
                 self.fluid1FluxResolved = (1-I2.av)*self.fluxResolved(self.fluid1, w.fluid1, w.av)
                 self.fluid2FluxResolved =    I2.av *self.fluxResolved(self.fluid2, w.fluid2, w.av)
@@ -57,17 +60,15 @@ class lesField:
                 # Subfilter fluxes
                 self.fluid1FluxSubgrid = (1-I2.av)*self.fluxAll(
                     1-I2.field,
-                    self.fluid1, 
+                    self.av, 
                     w.field, 
                     w.av
-                    # w.fluid1
                 ) - self.fluid1FluxResolved
                 self.fluid2FluxSubgrid = I2.av*self.fluxAll(
-                    I2.field,
-                    self.fluid2, 
+                    I2.field, 
+                    self.av, 
                     w.field, 
                     w.av
-                    # w.fluid2
                 ) - self.fluid2FluxResolved
     
     # Get the vertical profile
