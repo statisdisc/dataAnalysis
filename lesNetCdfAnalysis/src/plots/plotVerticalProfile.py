@@ -149,7 +149,7 @@ def plotVerticalFluxes(
         os.makedirs(folderVertical)
     
     plt.savefig(
-        os.path.join(folderVertical, "profile_{}.png".format(field.name)), 
+        os.path.join(folderVertical, "profile_flux_{}.png".format(field.name)), 
         bbox_inches="tight", 
         dpi=200
     )
