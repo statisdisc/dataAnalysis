@@ -70,6 +70,14 @@ class lesField:
                     w.field, 
                     w.av
                 ) - self.fluid2FluxResolved
+                
+                # Resolved fluxes
+                # self.fluid1FluxResolved = (1-I2.av)*self.fluxResolvedAlternative(self.fluid1, w.fluid1)
+                # self.fluid2FluxResolved =    I2.av *self.fluxResolvedAlternative(self.fluid2, w.fluid2)
+                
+                # Subfilter fluxes
+                # self.fluid1FluxSubgrid = (1-I2.av)*self.fluxAllAlternative(1-I2.field, w.field) - self.fluid1FluxResolved
+                # self.fluid2FluxSubgrid =    I2.av *self.fluxAllAlternative(  I2.field, w.field) - self.fluid2FluxResolved
     
     # Get the vertical profile
     def horizontalAverage(self):
@@ -102,5 +110,15 @@ class lesField:
         wMean = wMean.reshape((len(wMean),1))
         return np.sum(
             I*(self.field-fluidMean[:,None])*(w - wMean[:,None]), 
+            axis=(1,2)
+        ) / np.sum(I, axis=(1,2))
+    
+    # Alternative flux formulation which use mean values of each fluid rather than overall mean
+    def fluxResolvedAlternative(self, fluidMean, wFluidMean):
+        return fluidMean*wFluidMean
+    
+    def fluxAllAlternative(self, I, w):
+        return np.sum(
+            I*self.field*w, 
             axis=(1,2)
         ) / np.sum(I, axis=(1,2))
