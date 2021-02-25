@@ -51,14 +51,6 @@ def main():
                 title=title,
                 folder=os.path.join(folderTime, snapshot.w.name)
             )
-            plotHistogramWithGaussian(
-                snapshot.w, 
-                snapshot.I2, 
-                layer,
-                k,
-                title=title,
-                folder=os.path.join(folderTime, snapshot.w.name)
-            )
             
             # Histogram for potential temperature, theta
             plotLayerHistogram(
@@ -79,25 +71,9 @@ def main():
                 title=title,
                 folder=os.path.join(folderTime, snapshot.qv.name)
             )
-            plotHistogramWithGaussian(
-                snapshot.qv, 
-                snapshot.I2, 
-                layer,
-                k,
-                title=title,
-                folder=os.path.join(folderTime, snapshot.qv.name)
-            )
             
             # Histogram for liquid water, ql
             plotLayerHistogram(
-                snapshot.ql, 
-                snapshot.I2, 
-                layer,
-                k,
-                title=title,
-                folder=os.path.join(folderTime, snapshot.ql.name)
-            )
-            plotHistogramWithGaussian(
                 snapshot.ql, 
                 snapshot.I2, 
                 layer,

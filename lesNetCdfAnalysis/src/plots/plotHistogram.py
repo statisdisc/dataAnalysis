@@ -59,7 +59,12 @@ def plotLayerHistogram(field, fieldI2, layer, layerIndex, title="", folder=""):
     )
     plt.close()
 
-def plotHistogramWithGaussian(field, fieldI2, layer, layerIndex, title="", folder=""):
+def plotHistogramWithGaussian(
+        field, fieldI2, layer, layerIndex, 
+        title="", 
+        folder="",
+        scmGaussian=[]
+    ):
     
     # Make data 1D for use in histograms
     data = field.field[layerIndex].flatten()
@@ -95,6 +100,16 @@ def plotHistogramWithGaussian(field, fieldI2, layer, layerIndex, title="", folde
     ax0.plot(x, normal1*weight, color="b", linewidth=1.5, linestyle="--")
     ax0.plot(x, normal2*weight, color="w", linewidth=1.5, linestyle="-")
     ax0.plot(x, normal2*weight, color="r", linewidth=1.5, linestyle="--")
+    
+    # Overlay Gaussian profiles of single column model
+    if scmGaussian != []:
+        normal1 = normalDist(x, scmGaussian["w1"], scmGaussian["wVar1"], amplitude=scmGaussian["sigma1"])
+        normal2 = normalDist(x, scmGaussian["w2"], scmGaussian["wVar2"], amplitude=scmGaussian["sigma2"])
+        
+        ax0.plot(x, normal1*weight, color="w", linewidth=0.5, linestyle="-")
+        ax0.plot(x, normal1*weight, color="b", linewidth=0.5, linestyle=":")
+        ax0.plot(x, normal2*weight, color="w", linewidth=0.5, linestyle="-")
+        ax0.plot(x, normal2*weight, color="r", linewidth=0.5, linestyle=":")
     
     # Limits and labels
     ax0.set_xlim(field.min, field.max)
