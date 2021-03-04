@@ -4,6 +4,8 @@ However, multi-fluid schemes have numerical schemes which are very sensitive to 
 As such, it is more important than usual to have accurate and conservative numerical schemes for the transfer processes.
 This programme analyses the energy and momentum conservation properties of 20 possible numerical schemes.
 
+These results are published in [McIntyre et al. (2020)](https://doi.org/10.1002/qj.3728).
+
 ## Prerequisites
 Python 2.7 with NumPy, SciPy and Matplotlib installed.
 
