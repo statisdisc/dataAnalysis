@@ -82,7 +82,7 @@ def plotVerticalProfile(
     # Mean profiles
     ax0.plot(field.fluid1, z, "b", linewidth=2.)
     ax0.plot(field.fluid2, z, "r", linewidth=2.)
-        
+    ax0.plot(field.av,     z, "k", linewidth=1.)    
     
     # Limits and labels
     ax0.set_xlim(field.min, field.max)

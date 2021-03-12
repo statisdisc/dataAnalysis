@@ -23,6 +23,7 @@ def plotThermalContour(
         dpi=200,
         folder="", 
         I2=[], 
+        u=[], 
         w=[], 
         cbarScale="logarithmic"
     ):
@@ -69,6 +70,11 @@ def plotThermalContour(
         
         for j in xrange(len(y)):
             ax.plot([xMin, xMax], [y[j], y[j]], "k", linewidth=0.2, alpha=0.5)
+    
+    # Show velocity vectors
+    if u != [] and w != []:
+        X, Y = np.meshgrid(x, y)
+        plt.quiver(np.concatenate(X)[::200], np.concatenate(Y)[::200], np.concatenate(u)[::200], np.concatenate(w)[::200], angles='xy', color="m", scale=100, headwidth=2)
     
     # Limits and labels
     ax.set_xlim(-10., 10.)

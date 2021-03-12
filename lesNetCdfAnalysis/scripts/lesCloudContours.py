@@ -16,7 +16,7 @@ from src.plots.plotThermalContour import plotThermalContour
 
 
 
-def main():
+def main(generateGif=False):
     
     # Fetch folders for code structure
     folder = folders(
@@ -26,6 +26,7 @@ def main():
     
     # Get Large Eddy Simulation data
     les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"))
+    # les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="plumeEdge")
     
     # Create plots for each snapshot in time
     for n in xrange(len(les.t)):
@@ -76,6 +77,7 @@ def main():
                 title=title,
                 xlabel="x (km)",
                 folder=folderTime,
+                # u=(snapshot.v.field-snapshot.v.av[:,None,None])[:,j,:],
                 w=snapshot.w.field[:,j,:]
             )
             
@@ -132,6 +134,7 @@ def main():
                 title=title,
                 xlabel="y (km)",
                 folder=folderTime,
+                # u=(snapshot.v.field-snapshot.v.av[:,None,None])[:,:,i],
                 w=snapshot.w.field[:,:,i]
             )
             
@@ -155,59 +158,60 @@ def main():
     del snapshot
     
     # Create gif animations for generated plots
-    for n in xrange(totalTimesteps):
-        folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
-        imageListContourXZ = []
-        imageListContourYZ = []
-        
-        for k in imagesIndices:
-            print k
+    if generateGif:
+        for n in xrange(totalTimesteps):
+            folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
             imageListContourXZ = []
             imageListContourYZ = []
             
-            imageListContourXZ.append(
-                os.path.join(
-                    os.path.join(folderTime, "contourCloud"), 
-                    "contour_{}_xz_cloud.png".format(k)
+            for k in imagesIndices:
+                print k
+                imageListContourXZ = []
+                imageListContourYZ = []
+                
+                imageListContourXZ.append(
+                    os.path.join(
+                        os.path.join(folderTime, "contourCloud"), 
+                        "contour_{}_xz_cloud.png".format(k)
+                    )
                 )
-            )
-            imageListContourXZ.append(
-                os.path.join(
-                    os.path.join(folderTime, "contourCloud"), 
-                    "contour_{}_xz_cloud+thermal.png".format(k)
+                imageListContourXZ.append(
+                    os.path.join(
+                        os.path.join(folderTime, "contourCloud"), 
+                        "contour_{}_xz_cloud+thermal.png".format(k)
+                    )
                 )
-            )
-            imageListContourXZ.append(
-                os.path.join(
-                    os.path.join(folderTime, "contourCloud"), 
-                    "contour_{}_xz_cloud+thermal+updraft.png".format(k)
+                imageListContourXZ.append(
+                    os.path.join(
+                        os.path.join(folderTime, "contourCloud"), 
+                        "contour_{}_xz_cloud+thermal+updraft.png".format(k)
+                    )
                 )
-            )
+                
+                imageListContourYZ.append(
+                    os.path.join(
+                        os.path.join(folderTime, "contourCloud"), 
+                        "contour_{}_yz_cloud.png".format(k)
+                    )
+                )
+                imageListContourYZ.append(
+                    os.path.join(
+                        os.path.join(folderTime, "contourCloud"), 
+                        "contour_{}_yz_cloud+thermal.png".format(k)
+                    )
+                )
+                imageListContourYZ.append(
+                    os.path.join(
+                        os.path.join(folderTime, "contourCloud"), 
+                        "contour_{}_yz_cloud+thermal+updraft.png".format(k)
+                    )
+                )
             
-            imageListContourYZ.append(
-                os.path.join(
-                    os.path.join(folderTime, "contourCloud"), 
-                    "contour_{}_yz_cloud.png".format(k)
-                )
-            )
-            imageListContourYZ.append(
-                os.path.join(
-                    os.path.join(folderTime, "contourCloud"), 
-                    "contour_{}_yz_cloud+thermal.png".format(k)
-                )
-            )
-            imageListContourYZ.append(
-                os.path.join(
-                    os.path.join(folderTime, "contourCloud"), 
-                    "contour_{}_yz_cloud+thermal+updraft.png".format(k)
-                )
-            )
-        
-            makeGif("contour_{}_xz.gif".format(k), imageListContourXZ, folder=folderTime, delay=200)
-            makeGif("contour_{}_yz.gif".format(k), imageListContourYZ, folder=folderTime, delay=200)
+                makeGif("contour_{}_xz.gif".format(k), imageListContourXZ, folder=folderTime, delay=200)
+                makeGif("contour_{}_yz.gif".format(k), imageListContourYZ, folder=folderTime, delay=200)
 
 if __name__ == "__main__":
     timeInit = time.time()
-    main()
+    main(generateGif=False)
     timeElapsed = time.time()
     print "Elapsed time: {:.2f}s".format(timeElapsed-timeInit)

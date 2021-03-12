@@ -24,8 +24,9 @@ def main():
     )
     
     # Get Large Eddy Simulation data
-    les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"))
+    # les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"))
     # les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="basic")
+    les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="plumeEdge")
     
     # Create plots for each snapshot in time
     for n in xrange(len(les.t)):
