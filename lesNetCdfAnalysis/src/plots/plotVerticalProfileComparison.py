@@ -56,83 +56,84 @@ def plotVolumeFraction(
     )
 
 # Plot horizontally averaged fields and their range of values
-def plotVerticalProfile(
-        z, field,
+def plotVerticalProfileComparison(
+        field,
+        id1,
+        id2,
+        id3="",
+        id4="",
         title="", 
         xlabel="", 
         folder="",
-        id="",
         plotZero=False
     ):
-    print "Plotting vertical mean profiles for field {}".format(field.name)
+    print "Plotting vertical mean profile comparison for field {}".format(field)
+    folderVertical = os.path.join(folder, "profilesMean")
+    
+    folderVertical1 = os.path.join(folderVertical, id1)
+    profile1 = np.load(os.path.join(folderVertical1, "z_profile_{}.npz".format(field)))
+    
+    folderVertical2 = os.path.join(folderVertical, id2)
+    profile2 = np.load(os.path.join(folderVertical2, "z_profile_{}.npz".format(field)))
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
     if plotZero:
-        ax0.plot(0*z, z, "k:", linewidth=0.5)
+        ax0.plot(0*profile1["z"], profile1["z"], "k:", linewidth=0.5)
     
     # Shaded regions for standard deviation range
     ax0.fill_betweenx(
-        z, field.fluid1-field.fluid1Std, field.fluid1+field.fluid1Std, 
+        profile1["z"], profile1["fluid1"]-profile1["fluid1Std"], profile1["fluid1"]+profile1["fluid1Std"], 
         facecolor=(0.,0.,0.5), 
         linewidth=0., 
         alpha=0.2
     )
     ax0.fill_betweenx(
-        z, field.fluid2-field.fluid2Std, field.fluid2+field.fluid2Std, 
+        profile1["z"], profile1["fluid2"]-profile1["fluid2Std"], profile1["fluid2"]+profile1["fluid2Std"], 
         facecolor=(0.5,0.,0.), 
         linewidth=0., 
         alpha=0.2
     )
     
     # Minimum and maximum range
-    ax0.plot(field.fluid1Min, z, "b--", linewidth=0.5, alpha=0.3)
-    ax0.plot(field.fluid1Max, z, "b--", linewidth=0.5, alpha=0.3)
-    ax0.plot(field.fluid2Min, z, "r--", linewidth=0.5, alpha=0.3)
-    ax0.plot(field.fluid2Max, z, "r--", linewidth=0.5, alpha=0.3)
+    ax0.plot(profile1["fluid1Min"], profile1["z"], "--", linewidth=0.5, color="#888888", alpha=0.5)
+    ax0.plot(profile1["fluid2Max"], profile1["z"], "--", linewidth=0.5, color="#888888", alpha=0.5)
     
     # Mean profiles
-    ax0.plot(field.fluid1, z, "b", linewidth=2.)
-    ax0.plot(field.fluid2, z, "r", linewidth=2.)
-    ax0.plot(field.av,     z, "k", linewidth=1.)    
+    ax0.plot(profile1["fluid1"], profile1["z"], "b", linewidth=2.)
+    ax0.plot(profile1["fluid2"], profile1["z"], "r", linewidth=2.)
+    
+    ax0.plot(profile2["fluid1"], profile2["z"], "b--", linewidth=1.)
+    ax0.plot(profile2["fluid2"], profile2["z"], "r--", linewidth=1.)
+    
+    if id3 != "":
+        folderVertical3 = os.path.join(folderVertical, id3)
+        profile3 = np.load(os.path.join(folderVertical3, "z_profile_{}.npz".format(field)))
+        
+        ax0.plot(profile3["fluid2"], profile3["z"], ":", linewidth=1., color="k")
+    
+    if id4 != "":
+        folderVertical4 = os.path.join(folderVertical, id4)
+        profile4 = np.load(os.path.join(folderVertical4, "z_profile_{}.npz".format(field)))
+        
+        ax0.plot(profile4["fluid2"], profile4["z"], ":", linewidth=1., color="#888888")
+    
+    # ax0.plot(profile1["av"],     profile1["z"], "k", linewidth=1.)    
     
     # Limits and labels
-    ax0.set_xlim(field.min, field.max)
-    ax0.set_ylim(np.min(z), np.max(z))
+    # ax0.set_xlim(profile1["min"], profile1["max"])
+    ax0.set_xlim(np.min(profile1["fluid1"]), np.max(profile1["fluid2"]))
+    ax0.set_ylim(np.min(profile1["z"]), np.max(profile1["z"]))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
     plt.title(title)
     
-    # Create folder for image
-    folderVertical = os.path.join(folder, "profilesMean")
-    if id != "":
-        folderVertical = os.path.join(folderVertical, id)
-    if not os.path.isdir(folderVertical):
-        os.makedirs(folderVertical)
-    
     plt.savefig(
-        os.path.join(folderVertical, "profile_{}.png".format(field.name)), 
+        os.path.join(folderVertical, "profileComparison_{}.png".format(field)), 
         bbox_inches="tight", 
         dpi=200
     )
     plt.close()
-    
-    # Save vertical profiles for future use
-    np.savez(
-        os.path.join(folderVertical, "z_profile_{}.npz".format(field.name)), 
-        z = z,
-        av = field.av,
-        min = field.min,
-        max = field.max,
-        fluid1 = field.fluid1,
-        fluid2 = field.fluid2,
-        fluid1Std = field.fluid1Std,
-        fluid2Std = field.fluid2Std,
-        fluid1Min = field.fluid1Min,
-        fluid1Max = field.fluid1Max,
-        fluid2Min = field.fluid2Min,
-        fluid2Max = field.fluid2Max
-    )
 
 # Plot the vertical fluxes
 def plotVerticalFluxes(

@@ -128,10 +128,33 @@ class lesDataSnapshot:
             # If the indicator function changes, then we are at the boundary of the plume
             # Finally, check the horizontal velocity divergence to approximately check whether 
             # air is entrering (entraining) at that location
-            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((u - np.roll(u, 1, axis(1))) < 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((u - np.roll(u, 1, axis(1))) > 0)
-            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((v - np.roll(v, 1, axis(2))) < 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((v - np.roll(v, 1, axis(2))) > 0)
+            # condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((u - np.roll(u, 1, axis=(1))) < 0)
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((u - np.roll(u,-1, axis=(1))) > 0)
+            # condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((v - np.roll(v, 1, axis=(2))) < 0)
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((v - np.roll(v,-1, axis=(2))) > 0)
+            
+            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((v - np.roll(v, 1, axis=(1))) <= 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((v - np.roll(v,-1, axis=(1))) >= 0)
+            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((u - np.roll(u, 1, axis=(2))) <= 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((u - np.roll(u,-1, axis=(2))) >= 0)
+            
+            return condition
+        elif I == "plumeEdgeDetrain":
+            I2 = self.getUpdraftIndicator(q, u, v, w, indicatorFunctionOverride="plume")
+            
+            # Translate grid cells by 1 or -1 along each horizontal axis
+            # If the indicator function changes, then we are at the boundary of the plume
+            # Finally, check the horizontal velocity divergence to approximately check whether 
+            # air is leaving (detraining) at that location
+            # condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((u - np.roll(u, 1, axis=(1))) > 0)
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((u - np.roll(u,-1, axis=(1))) < 0)
+            # condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((v - np.roll(v, 1, axis=(2))) > 0)
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((v - np.roll(v,-1, axis=(2))) < 0)
+            
+            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((v - np.roll(v, 1, axis=(1))) > 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((v - np.roll(v,-1, axis=(1))) < 0)
+            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((u - np.roll(u, 1, axis=(2))) > 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((u - np.roll(u,-1, axis=(2))) < 0)
             
             return condition
         else:

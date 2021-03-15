@@ -16,19 +16,23 @@ plt.rcParams["font.family"] = "serif"
 
 def plotThermalContour(
         x, y, ql,
-        showMesh=False,
-        id="", 
-        title="", 
-        xlabel="",
-        dpi=200,
-        folder="", 
-        I2=[], 
-        u=[], 
-        w=[], 
-        cbarScale="logarithmic"
+        showMesh = False,
+        id = "", 
+        title = "", 
+        xlabel = "",
+        ylabel = "z (km)",
+        xlim = [-10., 10.],
+        ylim = [0., 3.],
+        dpi = 200,
+        folder = "", 
+        I2 = [], 
+        u = [], 
+        w = [], 
+        velocityVectorsOnly = False,
+        cbarScale = "logarithmic"
     ):
     
-    fig, ax = plt.subplots(1,1,figsize=(16,4))
+    fig, ax = plt.subplots(1,1,figsize=(int(xlim[1]-xlim[0]),2*int(ylim[1]-ylim[0])))
     
     # Plot regions where clouds exist (based on liquid water, ql)
     if cbarScale == "logarithmic":
@@ -50,7 +54,7 @@ def plotThermalContour(
         
     
     # Plot contours for regions of ascending air
-    if w != []:
+    if w != [] and not velocityVectorsOnly:
         X, Y = np.meshgrid(x, y)
         
         # Fill regions
@@ -73,14 +77,15 @@ def plotThermalContour(
     
     # Show velocity vectors
     if u != [] and w != []:
+        vectorInterval = 100
         X, Y = np.meshgrid(x, y)
-        plt.quiver(np.concatenate(X)[::200], np.concatenate(Y)[::200], np.concatenate(u)[::200], np.concatenate(w)[::200], angles='xy', color="m", scale=100, headwidth=2)
+        plt.quiver(np.concatenate(X)[::vectorInterval], np.concatenate(Y)[::vectorInterval], np.concatenate(u)[::vectorInterval], np.concatenate(w)[::vectorInterval], angles='xy', color="m", scale=100, headwidth=2)
     
     # Limits and labels
-    ax.set_xlim(-10., 10.)
-    ax.set_ylim(0., 3.)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
     ax.set_xlabel(xlabel)
-    ax.set_ylabel("z (km)")
+    ax.set_ylabel(ylabel)
     plt.title(title)
     
     # Ensure x and y axis are the same scale
