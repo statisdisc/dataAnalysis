@@ -10,6 +10,7 @@ import time
 sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
 from src.objects.folders import folders
 from src.utilities.getLesData import getLesData
+from src.plots.plotTransferredProperties import plotTransferredProperties
 from src.plots.plotVerticalProfileComparison import plotVolumeFraction
 from src.plots.plotVerticalProfileComparison import plotVerticalProfileComparison
 from src.plots.plotVerticalProfileComparison import plotVerticalFluxes
@@ -91,6 +92,60 @@ def main():
             # folder=folderTime,
             # id=indicatorFunction
         # )
+        
+        plotTransferredProperties(
+            "u", "plume", "plumeEdge",
+            title="Vertical velocity", 
+            xlabel="$b_{ij}$",
+            yMarkers=[1., 2.8],
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        plotTransferredProperties(
+            "v", "plume", "plumeEdge",
+            title="Vertical velocity", 
+            xlabel="$b_{ij}$",
+            yMarkers=[1., 2.8],
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        plotTransferredProperties(
+            "w", "plume", "plumeEdge",
+            title="Vertical velocity", 
+            xlabel="$b_{ij}$",
+            yMarkers=[1., 2.8],
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        plotTransferredProperties(
+            "theta", "plume", "plumeEdge",
+            title="Vertical velocity", 
+            xlabel="$b_{ij}$",
+            yMarkers=[1., 2.8],
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        plotTransferredProperties(
+            "qv", "plume", "plumeEdge",
+            title="Vertical velocity", 
+            xlabel="$b_{ij}$",
+            yMarkers=[1., 2.8],
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        plotTransferredProperties(
+            "ql", "plume", "plumeEdge",
+            title="Vertical velocity", 
+            xlabel="$b_{ij}$",
+            yMarkers=[1., 2.8],
+            folder=folderTime,
+            plotZero=True
+        )
         
         '''# Vertical fluxes
         plotVerticalFluxes(

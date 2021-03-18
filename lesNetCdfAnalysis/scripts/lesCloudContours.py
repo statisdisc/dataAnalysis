@@ -40,7 +40,7 @@ def main(generateGif=False):
         # Which layers of the 3D data set do we want to plot?
         imagesIndices = range(0, min(len(snapshot.x),len(snapshot.y)), 10)
         
-        # Plot slices at fixed locations on the z-axis
+        '''# Plot slices at fixed locations on the z-axis
         for k in range(0, len(snapshot.z), 10):
             layer = snapshot.z[k]*1e-3
             title = "z = {:.2f}km (id={})".format(layer, k+1)
@@ -61,8 +61,8 @@ def main(generateGif=False):
                 I2=snapshot.I2.field[k,:,:],
                 u=(snapshot.u.field-0*np.mean(snapshot.u.av))[k,:,:],
                 w=(snapshot.v.field-0*np.mean(snapshot.v.av))[k,:,:]
-            )
-        '''# Plot slices at fixed locations on the y-axis
+            )'''
+        # Plot slices at fixed locations on the y-axis
         for j in imagesIndices:
             layer = snapshot.y[j]*1e-3
             title = "y = {:.2f}km (id={})".format(layer, j+1)
@@ -85,6 +85,7 @@ def main(generateGif=False):
                 snapshot.z*1e-3,
                 snapshot.ql.field[:,j,:],
                 id="{}_xz_cloud+thermal".format(j),
+                # id="{}_xz_cloud+thermal+edge".format(j),
                 title=title,
                 xlabel="x (km)",
                 folder=folderTime,
@@ -172,7 +173,7 @@ def main(generateGif=False):
                 folder=folderTime,
                 I2=snapshot.I2.field[:,:,i],
                 w=snapshot.w.field[:,:,i]
-            )'''
+            )
     
     
     # Remove les data to clear memory
