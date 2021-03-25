@@ -11,15 +11,20 @@ class lesDataSnapshot:
         # Time
         self.t = data.variables["TIME"][:][indexTime]*1
 
-        # Range of x, y and z values
+        # List of possible x, y and z values
         self.x = data.variables["X"][:]*1
         self.y = data.variables["Y"][:]*1
         self.z = data.variables["Z"][:]*1
         
-        # Range of x, y and z values in vector form
+        # List of possible x, y and z values in vector form
         self.xv = data.variables["X2"][:]*1
         self.yv = data.variables["Y2"][:]*1
         self.zv = data.variables["Z2"][:]*1
+        
+        # Grid spacings
+        self.dx = np.abs(self.x - np.roll(self.x, 1))
+        self.dy = np.abs(self.y - np.roll(self.y, 1))
+        self.dz = np.abs(self.z - np.roll(self.z, 1))
         
         # Definition for partitioning of fluid
         self.indicatorFunction = indicatorFunction
@@ -35,7 +40,10 @@ class lesDataSnapshot:
                     data.variables["Q03"][indexTime],
                     data.variables["U"][indexTime],
                     data.variables["V"][indexTime],
-                    data.variables["W"][indexTime]
+                    data.variables["W"][indexTime],
+                    data.variables["THETA"][indexTime],
+                    data.variables["Q01"][indexTime],
+                    data.variables["Q02"][indexTime]
                 )
             )
         elif indicatorType == "deep":
@@ -45,7 +53,10 @@ class lesDataSnapshot:
                     data.variables["Q04"][indexTime],
                     data.variables["U"][indexTime],
                     data.variables["V"][indexTime],
-                    data.variables["W"][indexTime]
+                    data.variables["W"][indexTime],
+                    data.variables["THETA"][indexTime],
+                    data.variables["Q01"][indexTime],
+                    data.variables["Q02"][indexTime]
                 )
             )
         else:
@@ -71,7 +82,7 @@ class lesDataSnapshot:
         
         
     
-    def getUpdraftIndicator(self, q, u, v, w, indicatorFunctionOverride=False):
+    def getUpdraftIndicator(self, q, u, v, w, theta, qv, ql, indicatorFunctionOverride=False):
         "Get updraft indicator function for a given radioactive tracer q."
         
         I = self.indicatorFunction
@@ -111,7 +122,7 @@ class lesDataSnapshot:
             
             return condition1*condition2
         elif I == "plumeEdge":
-            I2 = self.getUpdraftIndicator(q, u, v, w, indicatorFunctionOverride="plume")
+            I2 = self.getUpdraftIndicator(q, u, v, w, theta, qv, ql, indicatorFunctionOverride="plume")
             
             # Translate grid cells by 1 or -1 along each horizontal axis
             # If the indicator function changes, the new condition will be True
@@ -122,7 +133,7 @@ class lesDataSnapshot:
             
             return condition
         elif I == "plumeEdgeEntrain":
-            I2 = self.getUpdraftIndicator(q, u, v, w, indicatorFunctionOverride="plume")
+            I2 = self.getUpdraftIndicator(q, u, v, w, theta, qv, ql, indicatorFunctionOverride="plume")
             
             # Translate grid cells by 1 or -1 along each horizontal axis
             # If the indicator function changes, then we are at the boundary of the plume
@@ -140,7 +151,7 @@ class lesDataSnapshot:
             
             return condition
         elif I == "plumeEdgeDetrain":
-            I2 = self.getUpdraftIndicator(q, u, v, w, indicatorFunctionOverride="plume")
+            I2 = self.getUpdraftIndicator(q, u, v, w, theta, qv, ql, indicatorFunctionOverride="plume")
             
             # Translate grid cells by 1 or -1 along each horizontal axis
             # If the indicator function changes, then we are at the boundary of the plume
@@ -151,11 +162,32 @@ class lesDataSnapshot:
             # condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((v - np.roll(v, 1, axis=(2))) > 0)
             # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((v - np.roll(v,-1, axis=(2))) < 0)
             
-            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((v - np.roll(v, 1, axis=(1))) > 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((v - np.roll(v,-1, axis=(1))) < 0)
-            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((u - np.roll(u, 1, axis=(2))) > 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((u - np.roll(u,-1, axis=(2))) < 0)
+            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * np.invert((v - np.roll(v, 1, axis=(1))) <= 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * np.invert((v - np.roll(v,-1, axis=(1))) >= 0)
+            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * np.invert((u - np.roll(u, 1, axis=(2))) <= 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * np.invert((u - np.roll(u,-1, axis=(2))) >= 0)
             
             return condition
+        elif I == "dbdz":
+            # Virtual potential temperature
+            # theta = theta*(1. + 0.61*qv/(1.-qv))
+            # theta = theta*(1. + 0.61*qv/(1.-qv) - ql/(1.-ql))
+            
+            thetaMean = np.mean(theta, axis=(1,2))
+            b = (theta - thetaMean[:,None,None])/thetaMean[:,None,None]
+            
+            # Air must be unstable db/dz < 0
+            condition1 = (b - np.roll(b, 1, axis=(0)))/self.dz[:,None,None] < 0
+            
+            # Second order differential, check for positive buoyancy anomaly
+            condition2Part1 = (np.roll(b, 1, axis=(2)) + np.roll(b,-1, axis=(2)) - 2*b)/self.dx[None,None,:]
+            condition2Part2 = (np.roll(b, 1, axis=(1)) + np.roll(b,-1, axis=(1)) - 2*b)/self.dy[None,:,None]
+            condition2Part3 = (np.roll(b, 1, axis=(0)) + np.roll(b,-1, axis=(0)) - 2*b)/self.dz[:,None,None]
+            condition2 = condition2Part1 + condition2Part2 + condition2Part3 < 0
+            
+            # Vertical velocity divergence
+            condition3 = (w - np.roll(w, 1, axis=(0)))/self.dz[:,None,None] > 0
+            
+            return condition1*condition2*condition3
         else:
             return np.ones_like(w)
