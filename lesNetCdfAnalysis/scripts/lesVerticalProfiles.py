@@ -19,8 +19,9 @@ def main():
     # indicatorFunction="basic"
     # indicatorFunction="plume"
     # indicatorFunction="plumeEdge"
-    indicatorFunction="plumeEdgeEntrain"
+    # indicatorFunction="plumeEdgeEntrain"
     # indicatorFunction="plumeEdgeDetrain"
+    indicatorFunction="dbdz"
     
     # Fetch folders for code structure
     folder = folders(
