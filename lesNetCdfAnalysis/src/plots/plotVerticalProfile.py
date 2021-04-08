@@ -20,7 +20,7 @@ def plotVolumeFraction(
         id="",
         folder=""
     ):
-    print "Plotting volume fraction"
+    print("Plotting volume fraction")
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
@@ -64,7 +64,7 @@ def plotVerticalProfile(
         id="",
         plotZero=False
     ):
-    print "Plotting vertical mean profiles for field {}".format(field.name)
+    print("Plotting vertical mean profiles for field {}".format(field.name))
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
@@ -143,7 +143,7 @@ def plotVerticalFluxes(
         id="",
         plotZero=True
     ):
-    print "Plotting vertical fluxes for field {}".format(field.name)
+    print("Plotting vertical fluxes for field {}".format(field.name))
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     

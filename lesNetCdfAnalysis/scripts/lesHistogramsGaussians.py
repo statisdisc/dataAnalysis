@@ -31,7 +31,7 @@ def main():
     scm = getScmData(os.path.join(folder.data, "SCM_results.mat"))
     
     # Create plots for each snapshot in time
-    for n in xrange(len(les.t)):
+    for n in range(len(les.t)):
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
             os.makedirs(folderTime)
@@ -39,7 +39,7 @@ def main():
         snapshot = les.data[n]
         
         # Create plots for each layer in the vertical
-        for k in xrange(len(snapshot.z)):
+        for k in range(len(snapshot.z)):
             layer = snapshot.z[k]*1e-3
             title = "z = {:.2f}km (id={})".format(layer, k+1)
             print "Layer {} ({:.3f}km)".format(k+1, layer)

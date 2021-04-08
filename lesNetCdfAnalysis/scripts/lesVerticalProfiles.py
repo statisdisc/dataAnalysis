@@ -15,13 +15,8 @@ from src.plots.plotVerticalProfile import plotVerticalProfile
 from src.plots.plotVerticalProfile import plotVerticalFluxes
 
 
-def main():
-    # indicatorFunction="basic"
-    # indicatorFunction="plume"
-    # indicatorFunction="plumeEdge"
-    # indicatorFunction="plumeEdgeEntrain"
-    # indicatorFunction="plumeEdgeDetrain"
-    indicatorFunction="dbdz"
+def main(indicatorFunction="basic"):
+    
     
     # Fetch folders for code structure
     folder = folders(
@@ -36,8 +31,8 @@ def main():
     )
     
     # Create plots for each snapshot in time
-    for n in xrange(len(les.t)):
-        print "Processing timestep {} (t = {:.2f}hrs)".format(n+1, float(les.t[n])/3600.)
+    for n in range(len(les.t)):
+        print("Processing timestep {} (t = {:.2f}hrs)".format(n+1, float(les.t[n])/3600.))
         
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
@@ -146,6 +141,13 @@ def main():
 
 if __name__ == "__main__":
     timeInit = time.time()
-    main()
+    
+    # main(indicatorFunction="basic")
+    # main(indicatorFunction="plume")
+    main(indicatorFunction="plumeEdge")
+    # main(indicatorFunction="plumeEdgeEntrain")
+    # main(indicatorFunction="plumeEdgeDetrain")
+    # main(indicatorFunction="dbdz")
+    
     timeElapsed = time.time()
-    print "Elapsed time: {:.2f}s".format(timeElapsed-timeInit)
+    print("Elapsed time: {:.2f}s".format(timeElapsed-timeInit))

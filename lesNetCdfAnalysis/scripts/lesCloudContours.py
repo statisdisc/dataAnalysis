@@ -31,7 +31,7 @@ def main(generateGif=False):
     les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="dbdz")
     
     # Create plots for each snapshot in time
-    for n in xrange(len(les.t)):
+    for n in range(len(les.t)):
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
             os.makedirs(folderTime)
@@ -184,7 +184,7 @@ def main(generateGif=False):
     
     # Create gif animations for generated plots
     if generateGif:
-        for n in xrange(totalTimesteps):
+        for n in range(totalTimesteps):
             folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
             imageListContourXZ = []
             imageListContourYZ = []

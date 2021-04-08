@@ -6,7 +6,7 @@ import numpy as np
 
 class lesField:
     def __init__(self, key, name, data, indexTime, I2=[], w=[], dataOverride=[]):
-        print "Initialising {} ({}) at snapshot {}".format(name, key, indexTime)
+        print("Initialising {} ({}) at snapshot {}".format(name, key, indexTime))
         
         self.key = key
         self.name = name

@@ -24,7 +24,7 @@ def plotTransferredProperties(
         folder="",
         plotZero=False
     ):
-    print "Plotting the transferred properties for field {}".format(field)
+    print("Plotting the transferred properties for field {}".format(field))
     
     folderVertical = os.path.join(folder, "profilesMean")
     
@@ -39,11 +39,13 @@ def plotTransferredProperties(
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
-    ax0.plot(b21, profile1["z"], "b")
-    ax0.plot(b12, profile1["z"], "r")
-    
+    ax0.fill_between([0,1],[0,0],[1.,1.], facecolor="#CCCCCC")
+    ax0.fill_between([0,1],[1,1],[2.8,2.8], facecolor="#CCCCFF")
     for marker in yMarkers:
         ax0.plot([0.,1.], [marker,marker], "k:", linewidth=0.5)
+    
+    ax0.plot(b21, profile1["z"], "b", label="$b_{21}$")
+    ax0.plot(b12, profile1["z"], "r", label="$b_{12}$")
     
     # Limits and labels
     ax0.set_xlim(0., 1.)
@@ -51,6 +53,7 @@ def plotTransferredProperties(
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
     plt.title(title)
+    plt.legend(loc="best")
     
     plt.savefig(
         os.path.join(folderVertical, "profile_transferred_{}.png".format(field)), 

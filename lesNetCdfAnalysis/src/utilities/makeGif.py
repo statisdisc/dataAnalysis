@@ -28,14 +28,14 @@ def makeGif(
     
     # Create temporary smaller gifs due to command line and memory restrictions
     temporaryGifs = []
-    for i in xrange((len(imageList)-1)/subGifLimit + 1):
+    for i in range((len(imageList)-1)/subGifLimit + 1):
         start = i*subGifLimit
         finish = min((i+1)*subGifLimit, len(imageList))
         
         print "Making temporary gif {} (Images {}-{})".format(i+1, start, finish)
         
         console = "{} -delay {} ".format(convert, delay)
-        for j in xrange(start, finish):
+        for j in range(start, finish):
             filename = imageList[j]
             
             if os.path.isfile(filename):

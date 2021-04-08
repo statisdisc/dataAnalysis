@@ -20,7 +20,7 @@ def plotVolumeFraction(
         id="",
         folder=""
     ):
-    print "Plotting volume fraction"
+    print("Plotting volume fraction")
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
@@ -67,7 +67,7 @@ def plotVerticalProfileComparison(
         folder="",
         plotZero=False
     ):
-    print "Plotting vertical mean profile comparison for field {}".format(field)
+    print("Plotting vertical mean profile comparison for field {}".format(field))
     folderVertical = os.path.join(folder, "profilesMean")
     
     folderVertical1 = os.path.join(folderVertical, id1)
@@ -100,25 +100,25 @@ def plotVerticalProfileComparison(
     ax0.plot(profile1["fluid2Max"], profile1["z"], "--", linewidth=0.5, color="#888888", alpha=0.5)
     
     # Mean profiles
-    ax0.plot(profile1["fluid1"], profile1["z"], "b", linewidth=2.)
-    ax0.plot(profile1["fluid2"], profile1["z"], "r", linewidth=2.)
+    ax0.plot(profile1["fluid1"], profile1["z"], "b", linewidth=1.)
+    ax0.plot(profile1["fluid2"], profile1["z"], "r", linewidth=1.)
     
-    ax0.plot(profile2["fluid1"], profile2["z"], "b--", linewidth=1.)
-    ax0.plot(profile2["fluid2"], profile2["z"], "r--", linewidth=1.)
+    ax0.plot(profile2["fluid1"], profile2["z"], "b--", linewidth=0.5)
+    ax0.plot(profile2["fluid2"], profile2["z"], "r--", linewidth=0.5)
     
     if id3 != "":
         folderVertical3 = os.path.join(folderVertical, id3)
         profile3 = np.load(os.path.join(folderVertical3, "z_profile_{}.npz".format(field)))
         
-        ax0.plot(profile3["fluid2"], profile3["z"], ":", linewidth=1., color="k")
+        ax0.plot(profile3["fluid2"], profile3["z"], ":", linewidth=0.5, color="k")
     
     if id4 != "":
         folderVertical4 = os.path.join(folderVertical, id4)
         profile4 = np.load(os.path.join(folderVertical4, "z_profile_{}.npz".format(field)))
         
-        ax0.plot(profile4["fluid2"], profile4["z"], ":", linewidth=1., color="#888888")
+        ax0.plot(profile4["fluid2"], profile4["z"], ":", linewidth=0.5, color="#888888")
     
-    # ax0.plot(profile1["av"],     profile1["z"], "k", linewidth=1.)    
+    # ax0.plot(profile1["av"],     profile1["z"], "k", linewidth=0.5)    
     
     # Limits and labels
     # ax0.set_xlim(profile1["min"], profile1["max"])
@@ -131,7 +131,7 @@ def plotVerticalProfileComparison(
     plt.savefig(
         os.path.join(folderVertical, "profileComparison_{}.png".format(field)), 
         bbox_inches="tight", 
-        dpi=200
+        dpi=300
     )
     plt.close()
 
@@ -144,7 +144,7 @@ def plotVerticalFluxes(
         id="",
         plotZero=True
     ):
-    print "Plotting vertical fluxes for field {}".format(field.name)
+    print("Plotting vertical fluxes for field {}".format(field.name))
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     

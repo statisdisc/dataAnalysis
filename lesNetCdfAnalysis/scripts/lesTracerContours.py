@@ -26,7 +26,7 @@ def main():
     les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"))
     
     # Create plots for each snapshot in time
-    for n in xrange(len(les.t)):
+    for n in range(len(les.t)):
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
             os.makedirs(folderTime)

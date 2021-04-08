@@ -60,10 +60,10 @@ def plotTracer(
         xMin, xMax = np.min(x), np.max(x)
         yMin, yMax = np.min(y), np.max(y)
         
-        for i in xrange(len(x)):
+        for i in range(len(x)):
             ax.plot([x[i], x[i]], [yMin, yMax], "k", linewidth=0.2, alpha=0.5)
         
-        for j in xrange(len(y)):
+        for j in range(len(y)):
             ax.plot([xMin, xMax], [y[j], y[j]], "k", linewidth=0.2, alpha=0.5)
     
     # Limits and labels

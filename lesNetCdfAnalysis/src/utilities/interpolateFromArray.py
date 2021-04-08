@@ -6,7 +6,7 @@ def interpolateFromArray(x, xValue, y):
     
     index = 0
     factor = 1.
-    for i in xrange(1, len(x)):
+    for i in range(1, len(x)):
         if x[i] > xValue:
             index = i
             factor = (x[i]-xValue)/float(x[i]-x[i-1])

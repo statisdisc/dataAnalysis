@@ -4,7 +4,7 @@ Object to store all Large Eddy Simulation data for a single timestep.
 
 import warnings
 import numpy as np
-from lesField import lesField
+from .lesField import lesField
 
 class lesDataSnapshot:
     def __init__(self, data, indexTime, indicatorType="shallow", indicatorFunction="plume"):

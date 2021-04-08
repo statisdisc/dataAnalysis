@@ -29,7 +29,7 @@ def main():
     # les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="basic")
     
     # Create plots for each snapshot in time
-    for n in xrange(len(les.t)):
+    for n in range(len(les.t)):
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
             os.makedirs(folderTime)
@@ -37,7 +37,7 @@ def main():
         snapshot = les.data[n]
         
         # Create plots for each layer in the vertical
-        for k in xrange(len(snapshot.z)):
+        for k in range(len(snapshot.z)):
             layer = snapshot.z[k]*1e-3
             title = "z = {:.2f}km (id={})".format(layer, k+1)
             print "Layer {} ({:.3f}km)".format(k+1, layer)
@@ -89,14 +89,14 @@ def main():
     del snapshot
     
     # Create gif animations for generated plots
-    for n in xrange(totalTimesteps):
+    for n in range(totalTimesteps):
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         imageListW = []
         imageListTheta = []
         imageListQv = []
         imageListQl = []
         
-        for k in xrange(totalImages):
+        for k in range(totalImages):
             imageListW.append(
                 os.path.join(os.path.join(folderTime, "w"), "histogram_w_{}.png".format(k+1))
             )

@@ -29,74 +29,81 @@ def main():
     
     # Create plots for each snapshot in time
     t = [8.89*3600]
-    for n in xrange(len(t)):
-        print "Processing timestep {} (t = {:.2f}hrs)".format(n+1, float(t[n])/3600.)
+    for n in range(len(t)):
+        print("Processing timestep {} (t = {:.2f}hrs)".format(n+1, float(t[n])/3600.))
         
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         
-        # plotVolumeFraction(
-            # snapshot.z*1e-3, snapshot.I2,
-            # folder=folderTime,
-            # id=indicatorFunction
-        # )
         
-        # Mean profiles
-        # plotVerticalProfile(
-            # snapshot.z*1e-3, snapshot.u,
-            # title="Horizontal velocity", 
-            # xlabel="u (m/s)", 
-            # folder=folderTime,
-            # id=indicatorFunction,
-            # plotZero=True
-        # )
         
-        # plotVerticalProfile(
-            # snapshot.z*1e-3, snapshot.v,
-            # title="Horizontal velocity", 
-            # xlabel="v (m/s)", 
-            # folder=folderTime,
-            # id=indicatorFunction,
-            # plotZero=True
-        # )
+        plotVerticalProfileComparison(
+            "u", "plume", "plumeEdge",
+            # id3="plumeEdgeEntrain",
+            # id4="plumeEdgeDetrain",
+            title="Horizontal velocity", 
+            xlabel="u (m/s)", 
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        plotVerticalProfileComparison(
+            "v", "plume", "plumeEdge",
+            # id3="plumeEdgeEntrain",
+            # id4="plumeEdgeDetrain",
+            title="Horizontal velocity", 
+            xlabel="v (m/s)", 
+            folder=folderTime,
+            plotZero=True
+        )
         
         plotVerticalProfileComparison(
             "w", "plume", "plumeEdge",
-            id3="plumeEdgeEntrain",
-            id4="plumeEdgeDetrain",
+            # id3="plumeEdgeEntrain",
+            # id4="plumeEdgeDetrain",
             title="Vertical velocity", 
             xlabel="w (m/s)", 
             folder=folderTime,
             plotZero=True
         )
         
-        # plotVerticalProfile(
-            # snapshot.z*1e-3, snapshot.theta,
-            # title="Potential temperature", 
-            # xlabel="theta (K)", 
-            # folder=folderTime,
-            # id=indicatorFunction
-        # )
+        plotVerticalProfileComparison(
+            "theta", "plume", "plumeEdge",
+            # id3="plumeEdgeEntrain",
+            # id4="plumeEdgeDetrain",
+            title="Potential temperature", 
+            xlabel="$\\theta$ (K)", 
+            folder=folderTime,
+            plotZero=True
+        )
         
-        # plotVerticalProfile(
-            # snapshot.z*1e-3, snapshot.qv,
-            # title="Water vapour", 
-            # xlabel="$q_v$ (kg/kg)", 
-            # folder=folderTime,
-            # id=indicatorFunction
-        # )
+        plotVerticalProfileComparison(
+            "qv", "plume", "plumeEdge",
+            # id3="plumeEdgeEntrain",
+            # id4="plumeEdgeDetrain",
+            title="Water vapour", 
+            xlabel="$q_v$ (kg/kg)", 
+            folder=folderTime,
+            plotZero=True
+        )
         
-        # plotVerticalProfile(
-            # snapshot.z*1e-3, snapshot.ql,
-            # title="Liquid water", 
-            # xlabel="$q_l$ (kg/kg)", 
-            # folder=folderTime,
-            # id=indicatorFunction
-        # )
+        plotVerticalProfileComparison(
+            "ql", "plume", "plumeEdge",
+            # id3="plumeEdgeEntrain",
+            # id4="plumeEdgeDetrain",
+            title="Liquid water", 
+            xlabel="$q_l$ (kg/kg)", 
+            folder=folderTime,
+            plotZero=True
+        )
+        
+        
+        
+        
         
         plotTransferredProperties(
             "u", "plume", "plumeEdge",
-            title="Vertical velocity", 
-            xlabel="$b_{ij}$",
+            title="Horizontal velocity", 
+            xlabel="$b_{ij}$ for u",
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
@@ -104,8 +111,8 @@ def main():
         
         plotTransferredProperties(
             "v", "plume", "plumeEdge",
-            title="Vertical velocity", 
-            xlabel="$b_{ij}$",
+            title="Horizontal velocity", 
+            xlabel="$b_{ij}$ for v",
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
@@ -114,7 +121,7 @@ def main():
         plotTransferredProperties(
             "w", "plume", "plumeEdge",
             title="Vertical velocity", 
-            xlabel="$b_{ij}$",
+            xlabel="$b_{ij}$ for w",
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
@@ -122,8 +129,8 @@ def main():
         
         plotTransferredProperties(
             "theta", "plume", "plumeEdge",
-            title="Vertical velocity", 
-            xlabel="$b_{ij}$",
+            title="Potential temperature", 
+            xlabel="$b_{ij}$ for $\\theta$",
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
@@ -131,8 +138,8 @@ def main():
         
         plotTransferredProperties(
             "qv", "plume", "plumeEdge",
-            title="Vertical velocity", 
-            xlabel="$b_{ij}$",
+            title="Water vapour", 
+            xlabel="$b_{ij}$ for $q_v$",
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
@@ -140,56 +147,15 @@ def main():
         
         plotTransferredProperties(
             "ql", "plume", "plumeEdge",
-            title="Vertical velocity", 
-            xlabel="$b_{ij}$",
+            title="Liquid water", 
+            xlabel="$b_{ij}$ for $q_l$",
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
         )
-        
-        '''# Vertical fluxes
-        plotVerticalFluxes(
-            snapshot.z*1e-3, snapshot.u,
-            title="Horizontal velocity fluxes", 
-            xlabel="$\\overline{w'u'}$ (m$^2$/s$^2$)", 
-            folder=folderTime,
-            id=indicatorFunction
-        )
-        
-        plotVerticalFluxes(
-            snapshot.z*1e-3, snapshot.v,
-            title="Horizontal velocity fluxes", 
-            xlabel="$\\overline{w'v'}$ (m$^2$/s$^2$)", 
-            folder=folderTime,
-            id=indicatorFunction
-        )
-        
-        plotVerticalFluxes(
-            snapshot.z*1e-3, snapshot.theta,
-            title="Potential temperature fluxes", 
-            xlabel="$\\overline{w'\\theta'}$ (K m/s)", 
-            folder=folderTime,
-            id=indicatorFunction
-        )
-        
-        plotVerticalFluxes(
-            snapshot.z*1e-3, snapshot.qv,
-            title="Water vapour fluxes", 
-            xlabel="$\\overline{w'q_v'}$ (kg/kg m/s)", 
-            folder=folderTime,
-            id=indicatorFunction
-        )
-        
-        plotVerticalFluxes(
-            snapshot.z*1e-3, snapshot.ql,
-            title="Liquid water fluxes", 
-            xlabel="$\\overline{w'q_l'}$ (kg/kg m/s)", 
-            folder=folderTime,
-            id=indicatorFunction
-        )'''
 
 if __name__ == "__main__":
     timeInit = time.time()
     main()
-    timeElapsed = time.time()
-    print "Elapsed time: {:.2f}s".format(timeElapsed-timeInit)
+    timeElapsed = time.time() - timeInit
+    print(f"Elapsed time: {timeInit:.2f}s")
