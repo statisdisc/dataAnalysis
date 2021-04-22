@@ -10,6 +10,7 @@ matplotlib.use('Agg')
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
+from scipy.io import savemat
 # plt.style.use("dark_background")
 # plt.rcParams["font.family"] = "serif"
 
@@ -127,6 +128,10 @@ def plotVerticalProfileComparison(
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
     plt.title(title)
+    
+    # Save vertical profiles for future use
+    savemat(os.path.join(folderVertical, "z_plumeEdge_{}.mat").format(field), profile2)
+    
     
     plt.savefig(
         os.path.join(folderVertical, "profileComparison_{}.png".format(field)), 

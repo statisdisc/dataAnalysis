@@ -30,7 +30,7 @@ def main():
     # Create plots for each snapshot in time
     t = [8.89*3600]
     for n in range(len(t)):
-        print("Processing timestep {} (t = {:.2f}hrs)".format(n+1, float(t[n])/3600.))
+        print("Processing timestep {} (t = {:.2f}hrs, {}s)".format(n+1, float(t[n])/3600., t[n]))
         
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         
@@ -158,4 +158,4 @@ if __name__ == "__main__":
     timeInit = time.time()
     main()
     timeElapsed = time.time() - timeInit
-    print(f"Elapsed time: {timeInit:.2f}s")
+    print(f"Elapsed time: {timeElapsed:.2f}s")

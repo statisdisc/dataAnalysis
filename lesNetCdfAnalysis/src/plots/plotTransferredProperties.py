@@ -34,8 +34,12 @@ def plotTransferredProperties(
     folderVertical2 = os.path.join(folderVertical, id2)
     profile2 = np.load(os.path.join(folderVertical2, "z_profile_{}.npz".format(field)))
     
-    b21 = (profile2["fluid2"]-profile1["fluid2"])/(profile1["fluid1"]-profile1["fluid2"] + 1e-8*((profile1["fluid1"]-profile1["fluid2"]) == 0. ))
-    b12 = (profile2["fluid2"]-profile1["fluid1"])/(profile1["fluid2"]-profile1["fluid1"] + 1e-8*((profile1["fluid2"]-profile1["fluid1"]) == 0. ))
+    conditionZero = 1e-8*((profile1["fluid1"]-profile1["fluid2"]) == 0. )
+    b21 = (profile2["fluid2"]-profile1["fluid2"])/(profile1["fluid1"]-profile1["fluid2"] + conditionZero)
+    b12 = (profile2["fluid2"]-profile1["fluid1"])/(profile1["fluid2"]-profile1["fluid1"] + conditionZero)
+    
+    variance = (profile2["fluid2Std"]**2 + b21**2*profile1["fluid1Std"]**2 + b12**2*profile1["fluid2Std"]**2)/(profile1["fluid1"]-profile1["fluid2"] + conditionZero)**2
+    stdev = np.sqrt(variance)
     
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
@@ -43,6 +47,22 @@ def plotTransferredProperties(
     ax0.fill_between([0,1],[1,1],[2.8,2.8], facecolor="#CCCCFF")
     for marker in yMarkers:
         ax0.plot([0.,1.], [marker,marker], "k:", linewidth=0.5)
+    
+    
+    # Shaded regions for standard deviation range
+    ax0.fill_betweenx(
+        profile1["z"], b21-stdev, b21+stdev, 
+        facecolor=(0.,0.,0.5), 
+        linewidth=0., 
+        alpha=0.2
+    )
+    ax0.fill_betweenx(
+        profile1["z"], b12-stdev, b12+stdev, 
+        facecolor=(0.5,0.,0.), 
+        linewidth=0., 
+        alpha=0.2
+    )
+    
     
     ax0.plot(b21, profile1["z"], "b", label="$b_{21}$")
     ax0.plot(b12, profile1["z"], "r", label="$b_{12}$")
