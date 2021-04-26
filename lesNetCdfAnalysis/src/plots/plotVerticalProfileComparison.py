@@ -66,7 +66,8 @@ def plotVerticalProfileComparison(
         title="", 
         xlabel="", 
         folder="",
-        plotZero=False
+        plotZero=False,
+        additionalLines=[]
     ):
     print("Plotting vertical mean profile comparison for field {}".format(field))
     folderVertical = os.path.join(folder, "profilesMean")
@@ -118,6 +119,9 @@ def plotVerticalProfileComparison(
         profile4 = np.load(os.path.join(folderVertical4, "z_profile_{}.npz".format(field)))
         
         ax0.plot(profile4["fluid2"], profile4["z"], ":", linewidth=0.5, color="#888888")
+    
+    for i in range(len(additionalLines)):
+        ax0.plot(additionalLines[i][0], additionalLines[i][1], color=additionalLines[i][2])
     
     # ax0.plot(profile1["av"],     profile1["z"], "k", linewidth=0.5)    
     
