@@ -145,8 +145,8 @@ if __name__ == "__main__":
     # main(indicatorFunction="basic")
     # main(indicatorFunction="plume")
     main(indicatorFunction="plumeEdge")
-    # main(indicatorFunction="plumeEdgeEntrain")
-    # main(indicatorFunction="plumeEdgeDetrain")
+    main(indicatorFunction="plumeEdgeEntrain")
+    main(indicatorFunction="plumeEdgeDetrain")
     # main(indicatorFunction="dbdz")
     
     timeElapsed = time.time()

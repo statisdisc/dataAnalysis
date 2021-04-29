@@ -13,7 +13,7 @@ def makeGif(
         subGifLimit=50,
         system="unix"
     ):
-    print "\nCreating gif animation: {}".format(filenameFinal)
+    print("\nCreating gif animation: {}".format(filenameFinal))
     
     # Convert command for imagemagick, operating system dependent
     convert = "convert"
@@ -32,7 +32,7 @@ def makeGif(
         start = i*subGifLimit
         finish = min((i+1)*subGifLimit, len(imageList))
         
-        print "Making temporary gif {} (Images {}-{})".format(i+1, start, finish)
+        print("Making temporary gif {} (Images {}-{})".format(i+1, start, finish))
         
         console = "{} -delay {} ".format(convert, delay)
         for j in range(start, finish):
@@ -50,7 +50,7 @@ def makeGif(
             
             
     if len(imageList)/subGifLimit > 1:
-        print "Stiching all gifs together"
+        print("Stiching all gifs together")
         console = "{} ".format(convert)
         for filename in temporaryGifs:
             console += "{} ".format(filename)
@@ -60,7 +60,7 @@ def makeGif(
         
         # Delete temporary gifs
         for filename in temporaryGifs:
-            print "Deleting {}".format(filename)
+            print("Deleting {}".format(filename))
             os.remove(filename)
     else:
         console = "mv {} {}".format(filenameGif, os.path.join(folderGif, filenameFinal))

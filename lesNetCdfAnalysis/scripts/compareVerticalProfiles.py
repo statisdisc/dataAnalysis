@@ -33,6 +33,8 @@ def main():
     
     for key in lesDiagnostics:
         print(key)
+        
+    
     
     
     
@@ -43,22 +45,13 @@ def main():
         
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         
-        indexTime = np.argmin(np.abs(lesDiagnostics["times_t"][0]-t[n]))
-        zLes = lesDiagnostics["z_lev"][0][:-1]/1000.
-        w2Les = lesDiagnostics["w_up"][:,indexTime]
-        w12Les = lesDiagnostics["w_det_up"][:,indexTime]
-        w21Les = lesDiagnostics["w_hat_up"][:,indexTime]
-        th2Les = lesDiagnostics["th_up"][:,indexTime]
-        th12Les = lesDiagnostics["th_det_up"][:,indexTime]
-        th21Les = lesDiagnostics["th_hat_up"][:,indexTime]
-        qv2Les = lesDiagnostics["qv_up"][:,indexTime]
-        qv12Les = lesDiagnostics["qv_det_up"][:,indexTime]
-        qv21Les = lesDiagnostics["qv_hat_up"][:,indexTime]
-        
-        '''plotVerticalProfileComparison(
+        '''
+        Plot comparisons of vertical profiles
+        '''
+        plotVerticalProfileComparison(
             "u", "plume", "plumeEdge",
-            # id3="plumeEdgeEntrain",
-            # id4="plumeEdgeDetrain",
+            id3="plumeEdgeEntrain",
+            id4="plumeEdgeDetrain",
             title="Horizontal velocity", 
             xlabel="u (m/s)", 
             folder=folderTime,
@@ -67,51 +60,48 @@ def main():
         
         plotVerticalProfileComparison(
             "v", "plume", "plumeEdge",
-            # id3="plumeEdgeEntrain",
-            # id4="plumeEdgeDetrain",
+            id3="plumeEdgeEntrain",
+            id4="plumeEdgeDetrain",
             title="Horizontal velocity", 
             xlabel="v (m/s)", 
             folder=folderTime,
             plotZero=True
-        )'''
+        )
         
         plotVerticalProfileComparison(
             "w", "plume", "plumeEdge",
-            # id3="plumeEdgeEntrain",
-            # id4="plumeEdgeDetrain",
+            id3="plumeEdgeEntrain",
+            id4="plumeEdgeDetrain",
             title="Vertical velocity", 
             xlabel="w (m/s)", 
             folder=folderTime,
-            plotZero=True,
-            additionalLines=[[w12Les,zLes,"k"],[w21Les,zLes,"#888888"]]
+            plotZero=True
         )
         
         plotVerticalProfileComparison(
             "theta", "plume", "plumeEdge",
-            # id3="plumeEdgeEntrain",
-            # id4="plumeEdgeDetrain",
+            id3="plumeEdgeEntrain",
+            id4="plumeEdgeDetrain",
             title="Potential temperature", 
             xlabel="$\\theta$ (K)", 
             folder=folderTime,
-            plotZero=True,
-            additionalLines=[[th12Les,zLes,"k"],[th21Les,zLes,"#888888"]]
+            plotZero=True
         )
         
         plotVerticalProfileComparison(
             "qv", "plume", "plumeEdge",
-            # id3="plumeEdgeEntrain",
-            # id4="plumeEdgeDetrain",
+            id3="plumeEdgeEntrain",
+            id4="plumeEdgeDetrain",
             title="Water vapour", 
             xlabel="$q_v$ (kg/kg)", 
             folder=folderTime,
-            plotZero=True,
-            additionalLines=[[qv12Les,zLes,"k"],[qv21Les,zLes,"#888888"]]
+            plotZero=True
         )
         
-        '''plotVerticalProfileComparison(
+        plotVerticalProfileComparison(
             "ql", "plume", "plumeEdge",
-            # id3="plumeEdgeEntrain",
-            # id4="plumeEdgeDetrain",
+            id3="plumeEdgeEntrain",
+            id4="plumeEdgeDetrain",
             title="Liquid water", 
             xlabel="$q_l$ (kg/kg)", 
             folder=folderTime,
@@ -119,9 +109,9 @@ def main():
         )
         
         
-        
-        
-        
+        '''
+        Plot the transferred properties during entrainment and detrainment - the b_ij coefficients
+        '''
         plotTransferredProperties(
             "u", "plume", "plumeEdge",
             title="Horizontal velocity", 
@@ -174,7 +164,7 @@ def main():
             yMarkers=[1., 2.8],
             folder=folderTime,
             plotZero=True
-        )'''
+        )
 
 if __name__ == "__main__":
     timeInit = time.time()

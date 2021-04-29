@@ -105,23 +105,23 @@ def plotVerticalProfileComparison(
     ax0.plot(profile1["fluid1"], profile1["z"], "b", linewidth=1.)
     ax0.plot(profile1["fluid2"], profile1["z"], "r", linewidth=1.)
     
-    ax0.plot(profile2["fluid1"], profile2["z"], "b--", linewidth=0.5)
-    ax0.plot(profile2["fluid2"], profile2["z"], "r--", linewidth=0.5)
+    ax0.plot(profile2["fluid1"], profile2["z"], "b--", linewidth=1.)
+    ax0.plot(profile2["fluid2"], profile2["z"], "r--", linewidth=1.)
     
     if id3 != "":
         folderVertical3 = os.path.join(folderVertical, id3)
         profile3 = np.load(os.path.join(folderVertical3, "z_profile_{}.npz".format(field)))
         
-        ax0.plot(profile3["fluid2"], profile3["z"], ":", linewidth=0.5, color="k")
+        ax0.plot(profile3["fluid2"], profile3["z"], "-", linewidth=0.5, color="b")
     
     if id4 != "":
         folderVertical4 = os.path.join(folderVertical, id4)
         profile4 = np.load(os.path.join(folderVertical4, "z_profile_{}.npz".format(field)))
         
-        ax0.plot(profile4["fluid2"], profile4["z"], ":", linewidth=0.5, color="#888888")
+        ax0.plot(profile4["fluid2"], profile4["z"], "-", linewidth=0.5, color="r")
     
     for i in range(len(additionalLines)):
-        ax0.plot(additionalLines[i][0], additionalLines[i][1], color=additionalLines[i][2])
+        ax0.plot(additionalLines[i][0], additionalLines[i][1], color=additionalLines[i][2], linewidth=0.5)
     
     # ax0.plot(profile1["av"],     profile1["z"], "k", linewidth=0.5)    
     
@@ -138,7 +138,7 @@ def plotVerticalProfileComparison(
     
     
     plt.savefig(
-        os.path.join(folderVertical, "profileComparison_{}.png".format(field)), 
+        os.path.join(folderVertical, "comparison_{}_{}_{}.png".format(id1, id2, field)), 
         bbox_inches="tight", 
         dpi=300
     )

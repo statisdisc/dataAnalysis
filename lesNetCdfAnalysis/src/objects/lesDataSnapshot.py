@@ -126,9 +126,9 @@ class lesDataSnapshot:
             
             # Translate grid cells by 1 or -1 along each horizontal axis
             # If the indicator function changes, the new condition will be True
-            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1)))
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1)))
-            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2)))
+            # condition =             I2 * np.invert(np.roll(I2, 1, axis=(1)))
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1)))
+            condition =  I2 * np.invert(np.roll(I2, 1, axis=(2)))
             condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2)))
             
             return condition
@@ -144,10 +144,10 @@ class lesDataSnapshot:
             # condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((v - np.roll(v, 1, axis=(2))) < 0)
             # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((v - np.roll(v,-1, axis=(2))) > 0)
             
-            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((v - np.roll(v, 1, axis=(1))) <= 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((v - np.roll(v,-1, axis=(1))) >= 0)
-            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((u - np.roll(u, 1, axis=(2))) <= 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((u - np.roll(u,-1, axis=(2))) >= 0)
+            # condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((v - np.roll(v, 1, axis=(1)) + u - np.roll(u, 1, axis=(1))) < 0)
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((v - np.roll(v,-1, axis=(1)) + u - np.roll(u,-1, axis=(1))) > 0)
+            condition =  I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((u - np.roll(u, 1, axis=(2)) + v - np.roll(v, 1, axis=(2))) < 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((u - np.roll(u,-1, axis=(2)) + v - np.roll(v,-1, axis=(2))) > 0)
             
             return condition
         elif I == "plumeEdgeDetrain":
@@ -162,10 +162,10 @@ class lesDataSnapshot:
             # condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((v - np.roll(v, 1, axis=(2))) > 0)
             # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((v - np.roll(v,-1, axis=(2))) < 0)
             
-            condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * np.invert((v - np.roll(v, 1, axis=(1))) <= 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * np.invert((v - np.roll(v,-1, axis=(1))) >= 0)
-            condition = condition + I2 * np.invert(np.roll(I2, 1, axis=(2))) * np.invert((u - np.roll(u, 1, axis=(2))) <= 0)
-            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * np.invert((u - np.roll(u,-1, axis=(2))) >= 0)
+            # condition =             I2 * np.invert(np.roll(I2, 1, axis=(1))) * ((v - np.roll(v, 1, axis=(1)) + u - np.roll(u, 1, axis=(1))) > 0)
+            # condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(1))) * ((v - np.roll(v,-1, axis=(1)) + u - np.roll(u,-1, axis=(1))) < 0)
+            condition =  I2 * np.invert(np.roll(I2, 1, axis=(2))) * ((u - np.roll(u, 1, axis=(2)) + v - np.roll(v, 1, axis=(2))) > 0)
+            condition = condition + I2 * np.invert(np.roll(I2,-1, axis=(2))) * ((u - np.roll(u,-1, axis=(2)) + v - np.roll(v,-1, axis=(2))) < 0)
             
             return condition
         elif I == "dbdz":

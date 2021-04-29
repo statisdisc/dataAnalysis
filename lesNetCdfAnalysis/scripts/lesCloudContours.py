@@ -17,18 +17,20 @@ from src.plots.plotThermalContour import plotThermalContour
 
 
 
-def main(generateGif=False):
+def main(generateGif=False, indicatorFunction="basic"):
+    
     
     # Fetch folders for code structure
     folder = folders(
-        folderScripts=os.path.dirname(os.path.realpath(__file__)),
-        folderData="/mnt/f/Desktop/LES_Data"
+        folderScripts = os.path.dirname(os.path.realpath(__file__)),
+        folderData = "/mnt/f/Desktop/LES_Data"
     )
     
     # Get Large Eddy Simulation data
-    # les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"))
-    # les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="plumeEdge")
-    les = getLesData(os.path.join(folder.data, "mov0235_ALL_01-_.nc"), indicatorFunction="dbdz")
+    les = getLesData(
+        os.path.join(folder.data, "mov0235_ALL_01-_.nc"), 
+        indicatorFunction = indicatorFunction
+    )
     
     # Create plots for each snapshot in time
     for n in range(len(les.t)):
@@ -39,7 +41,7 @@ def main(generateGif=False):
         snapshot = les.data[n]
         
         # Which layers of the 3D data set do we want to plot?
-        imagesIndices = range(0, min(len(snapshot.x),len(snapshot.y)), 10)
+        imagesIndices = range(0, min(len(snapshot.x),len(snapshot.y)), 50)
         
         '''# Plot slices at fixed locations on the z-axis
         for k in range(0, len(snapshot.z), 10):
@@ -67,7 +69,7 @@ def main(generateGif=False):
         for j in imagesIndices:
             layer = snapshot.y[j]*1e-3
             title = "y = {:.2f}km (id={})".format(layer, j+1)
-            print "XZ layer {} ({})".format(j+1, title)
+            print("XZ layer {} ({})".format(j+1, title))
             
             # Plot with only clouds
             plotThermalContour(
@@ -125,7 +127,7 @@ def main(generateGif=False):
         for i in imagesIndices:
             layer = snapshot.x[i]*1e-3
             title = "x = {:.2f}km (id={})".format(layer, i+1)
-            print "YZ layer {} ({})".format(i+1, title)
+            print("YZ layer {} ({})".format(i+1, title))
             
             # Plot with only clouds
             plotThermalContour(
@@ -190,7 +192,7 @@ def main(generateGif=False):
             imageListContourYZ = []
             
             for k in imagesIndices:
-                print k
+                print(k)
                 imageListContourXZ = []
                 imageListContourYZ = []
                 
@@ -237,6 +239,12 @@ def main(generateGif=False):
 
 if __name__ == "__main__":
     timeInit = time.time()
-    main(generateGif=False)
-    timeElapsed = time.time()
-    print "Elapsed time: {:.2f}s".format(timeElapsed-timeInit)
+    
+    # main(generateGif=False, indicatorFunction="plume")
+    # main(generateGif=False, indicatorFunction="plumeEdge")
+    main(generateGif=False, indicatorFunction="plumeEdgeEntrain")
+    # main(generateGif=False, indicatorFunction="plumeEdgeDetrain")
+    
+    
+    timeElapsed = time.time() - timeInit
+    print("Elapsed time: {timeElapsed:.2f}s")
