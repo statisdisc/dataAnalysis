@@ -59,9 +59,9 @@ def plotTransferredProperties(
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
     # ax0.fill_between([0,1],[0,0],[1.,1.], facecolor="#CCCCFF")
-    ax0.fill_between([0,1],[1,1],[2.8,2.8], facecolor="#CCCCCC")
+    ax0.fill_between([-10,10],[1,1],[2.8,2.8], facecolor="#CCCCCC")
     for marker in yMarkers:
-        ax0.plot([0.,1.], [marker,marker], "k:", linewidth=0.5)
+        ax0.plot([-10.,10.], [marker,marker], "k:", linewidth=0.5)
     
     
     # Shaded regions for standard deviation range
@@ -83,7 +83,8 @@ def plotTransferredProperties(
     ax0.plot(b12, p1["z"], "r", label="$b_{12}$")
     
     # Limits and labels
-    ax0.set_xlim(0., 1.)
+    # ax0.set_xlim(0., 1.)
+    ax0.set_xlim(-2., 3.)
     ax0.set_ylim(0., 4.)
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
