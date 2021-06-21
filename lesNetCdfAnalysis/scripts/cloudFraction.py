@@ -38,6 +38,7 @@ def main(generateGif=False, indicatorFunction="basic"):
     
     # Create plots for each snapshot in time
     for n in range(len(les.t)):
+        print(les.t[n])
         folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
         if not os.path.isdir(folderTime):
             os.makedirs(folderTime)

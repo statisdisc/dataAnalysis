@@ -97,4 +97,13 @@ def plotTransferredProperties(
         dpi=200
     )
     plt.close()
+    
+    
+    # Save vertical profiles for future use
+    np.savez(
+        os.path.join(folderVertical, "z_b_{}.npz".format(field)), 
+        z = p1["z"],
+        b12 = b12,
+        b21 = b21
+    )
 
