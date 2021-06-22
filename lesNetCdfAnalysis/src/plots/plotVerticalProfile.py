@@ -10,8 +10,7 @@ matplotlib.use('Agg')
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
-# plt.style.use("dark_background")
-# plt.rcParams["font.family"] = "serif"
+from scipy.io import savemat
 
 # Plot the horizontally averaged volume fraction
 def plotVolumeFraction(
@@ -119,7 +118,7 @@ def plotVerticalProfile(
     
     # Save vertical profiles for future use
     np.savez(
-        os.path.join(folderVertical, "z_profile_{}.npz".format(field.name)), 
+        os.path.join(folderVertical, "z_{}.npz".format(field.name)), 
         z = z,
         av = field.av,
         min = field.min,
@@ -133,6 +132,35 @@ def plotVerticalProfile(
         fluid2Min = field.fluid2Min,
         fluid2Max = field.fluid2Max
     )
+    
+    # Save vertical profiles in MATLAB readable format
+    if id == "plumeEdge":
+        savemat(
+            os.path.join(folderVertical, "z_{}.mat".format(field.name)), 
+            {
+                "z": z,
+                "transfer12": field.fluid2,
+                "transfer21": field.fluid2
+            }
+        )
+    else:
+        savemat(
+            os.path.join(folderVertical, "z_{}.mat".format(field.name)), 
+            {
+                "z": z,
+                "av": field.av,
+                "min": field.min,
+                "max": field.max,
+                "fluid1": field.fluid1,
+                "fluid2": field.fluid2,
+                "fluid1Std": field.fluid1Std,
+                "fluid2Std": field.fluid2Std,
+                "fluid1Min": field.fluid1Min,
+                "fluid1Max": field.fluid1Max,
+                "fluid2Min": field.fluid2Min,
+                "fluid2Max": field.fluid2Max
+            }
+        )
 
 # Plot the vertical fluxes
 def plotVerticalFluxes(
@@ -197,4 +225,16 @@ def plotVerticalFluxes(
         fluid2FluxResolved = field.fluid2FluxResolved,
         fluid1FluxSubgrid = field.fluid1FluxSubgrid,
         fluid2FluxSubgrid = field.fluid2FluxSubgrid
+    )
+    
+    # Save vertical profiles in MATLAB readable format
+    savemat(
+        os.path.join(folderFluxes, "z_{}.mat".format(field.name)), 
+        {
+            "z": z,
+            "fluid1FluxResolved": field.fluid1FluxResolved,
+            "fluid2FluxResolved": field.fluid2FluxResolved,
+            "fluid1FluxSubgrid": field.fluid1FluxSubgrid,
+            "fluid2FluxSubgrid": field.fluid2FluxSubgrid
+        }
     )
