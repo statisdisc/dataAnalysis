@@ -5,6 +5,8 @@
 # Data files too large for online storage
 *.nc
 *.mat
+*.np
+*.npz
 
 # Images
 *.png
