@@ -65,39 +65,41 @@ def plotVerticalProfile(
     ):
     print("Plotting vertical mean profiles for field {}".format(field.name))
     
+    zkm = 1e-3*z
+    
     fig, ax0 = plt.subplots(1,1,figsize=(5,4))
     
     if plotZero:
-        ax0.plot(0*z, z, "k:", linewidth=0.5)
+        ax0.plot(0*zkm, zkm, "k:", linewidth=0.5)
     
     # Shaded regions for standard deviation range
     ax0.fill_betweenx(
-        z, field.fluid1-field.fluid1Std, field.fluid1+field.fluid1Std, 
+        zkm, field.fluid1-field.fluid1Std, field.fluid1+field.fluid1Std, 
         facecolor=(0.,0.,0.5), 
         linewidth=0., 
         alpha=0.2
     )
     ax0.fill_betweenx(
-        z, field.fluid2-field.fluid2Std, field.fluid2+field.fluid2Std, 
+        zkm, field.fluid2-field.fluid2Std, field.fluid2+field.fluid2Std, 
         facecolor=(0.5,0.,0.), 
         linewidth=0., 
         alpha=0.2
     )
     
     # Minimum and maximum range
-    ax0.plot(field.fluid1Min, z, "b--", linewidth=0.5, alpha=0.3)
-    ax0.plot(field.fluid1Max, z, "b--", linewidth=0.5, alpha=0.3)
-    ax0.plot(field.fluid2Min, z, "r--", linewidth=0.5, alpha=0.3)
-    ax0.plot(field.fluid2Max, z, "r--", linewidth=0.5, alpha=0.3)
+    ax0.plot(field.fluid1Min, zkm, "b--", linewidth=0.5, alpha=0.3)
+    ax0.plot(field.fluid1Max, zkm, "b--", linewidth=0.5, alpha=0.3)
+    ax0.plot(field.fluid2Min, zkm, "r--", linewidth=0.5, alpha=0.3)
+    ax0.plot(field.fluid2Max, zkm, "r--", linewidth=0.5, alpha=0.3)
     
     # Mean profiles
-    ax0.plot(field.fluid1, z, "b", linewidth=2.)
-    ax0.plot(field.fluid2, z, "r", linewidth=2.)
-    ax0.plot(field.av,     z, "k", linewidth=1.)    
+    ax0.plot(field.fluid1, zkm, "b", linewidth=2.)
+    ax0.plot(field.fluid2, zkm, "r", linewidth=2.)
+    ax0.plot(field.av,     zkm, "k", linewidth=1.)    
     
     # Limits and labels
     ax0.set_xlim(field.min, field.max)
-    ax0.set_ylim(np.min(z), np.max(z))
+    ax0.set_ylim(np.min(zkm), np.max(zkm))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
     plt.title(title)

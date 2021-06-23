@@ -52,14 +52,14 @@ def main(indicatorFunction="basic", netcdfFile=""):
             snapshot = les.data[n]
             
             plotVolumeFraction(
-                snapshot.z*1e-3, snapshot.I2,
+                snapshot.z, snapshot.I2,
                 folder=folderTime,
                 id=indicatorFunction
             )
             
             # Mean profiles
             plotVerticalProfile(
-                snapshot.z*1e-3, snapshot.u,
+                snapshot.z, snapshot.u,
                 title="Horizontal velocity", 
                 xlabel="u (m/s)", 
                 folder=folderTime,
@@ -68,7 +68,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalProfile(
-                snapshot.z*1e-3, snapshot.v,
+                snapshot.z, snapshot.v,
                 title="Horizontal velocity", 
                 xlabel="v (m/s)", 
                 folder=folderTime,
@@ -77,7 +77,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalProfile(
-                snapshot.z*1e-3, snapshot.w,
+                snapshot.z, snapshot.w,
                 title="Vertical velocity", 
                 xlabel="w (m/s)", 
                 folder=folderTime,
@@ -86,7 +86,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalProfile(
-                snapshot.z*1e-3, snapshot.theta,
+                snapshot.z, snapshot.theta,
                 title="Potential temperature", 
                 xlabel="theta (K)", 
                 folder=folderTime,
@@ -94,7 +94,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalProfile(
-                snapshot.z*1e-3, snapshot.qv,
+                snapshot.z, snapshot.qv,
                 title="Water vapour", 
                 xlabel="$q_v$ (kg/kg)", 
                 folder=folderTime,
@@ -102,7 +102,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalProfile(
-                snapshot.z*1e-3, snapshot.ql,
+                snapshot.z, snapshot.ql,
                 title="Liquid water", 
                 xlabel="$q_l$ (kg/kg)", 
                 folder=folderTime,
@@ -111,7 +111,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             
             # Vertical fluxes
             plotVerticalFluxes(
-                snapshot.z*1e-3, snapshot.u,
+                snapshot.z, snapshot.u,
                 title="Horizontal velocity fluxes", 
                 xlabel="$\\overline{w'u'}$ (m$^2$/s$^2$)", 
                 folder=folderTime,
@@ -119,7 +119,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalFluxes(
-                snapshot.z*1e-3, snapshot.v,
+                snapshot.z, snapshot.v,
                 title="Horizontal velocity fluxes", 
                 xlabel="$\\overline{w'v'}$ (m$^2$/s$^2$)", 
                 folder=folderTime,
@@ -127,7 +127,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalFluxes(
-                snapshot.z*1e-3, snapshot.theta,
+                snapshot.z, snapshot.theta,
                 title="Potential temperature fluxes", 
                 xlabel="$\\overline{w'\\theta'}$ (K m/s)", 
                 folder=folderTime,
@@ -135,7 +135,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalFluxes(
-                snapshot.z*1e-3, snapshot.qv,
+                snapshot.z, snapshot.qv,
                 title="Water vapour fluxes", 
                 xlabel="$\\overline{w'q_v'}$ (kg/kg m/s)", 
                 folder=folderTime,
@@ -143,7 +143,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
             )
             
             plotVerticalFluxes(
-                snapshot.z*1e-3, snapshot.ql,
+                snapshot.z, snapshot.ql,
                 title="Liquid water fluxes", 
                 xlabel="$\\overline{w'q_l'}$ (kg/kg m/s)", 
                 folder=folderTime,
