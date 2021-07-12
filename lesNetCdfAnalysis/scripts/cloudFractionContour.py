@@ -15,6 +15,10 @@ from src.utilities.makeGif import makeGif
 from src.utilities.getLesData import getLesData
 from src.plots.plotCloudFraction import plotCloudFraction
 
+# Get the cloud cover
+def calculateCloudCover(cloud):
+    return np.mean(np.sum(cloud, axis=(0)) > 0)
+
 # Get the vertical profile
 def horizontalAverage(field):
     return np.mean(field, axis=(1,2))
@@ -39,6 +43,9 @@ def main(generateGif=False, indicatorFunction="basic", netcdfFile=""):
         files = [os.path.join(folder.data, netcdfFile)]
     
     times = []
+    cloudCovers = {}
+    cloudCovers1 = {}
+    cloudCovers2 = {}
     cloudFractions = {}
     cloudFractions1 = {}
     cloudFractions2 = {}
@@ -48,7 +55,7 @@ def main(generateGif=False, indicatorFunction="basic", netcdfFile=""):
     counter = 0
     for file in files:
         counter += 1
-        # if counter == 4:
+        # if counter == 3:
             # break
         
         print(f"\nProcessing file {counter}: {file}")
@@ -79,11 +86,16 @@ def main(generateGif=False, indicatorFunction="basic", netcdfFile=""):
             cloudFraction2sigma2 = cloudFraction2*snapshot.I2.av
             
             times.append(time)
+            cloudCovers[time]  = calculateCloudCover(cloud)
+            cloudCovers1[time] = calculateCloudCover(cloud * np.invert(snapshot.I2.field))
+            cloudCovers2[time] = calculateCloudCover(cloud * snapshot.I2.field)
             cloudFractions[time]  = cloudFraction
             cloudFractions1[time] = cloudFraction1
             cloudFractions2[time] = cloudFraction2
             cloudFractions1sigma1[time] = cloudFraction1sigma1
             cloudFractions2sigma2[time] = cloudFraction2sigma2
+            
+            print("Cloud cover: {:.3f}".format(cloudCovers[time]))
             
             '''
             plotCloudFraction(
@@ -112,6 +124,9 @@ def main(generateGif=False, indicatorFunction="basic", netcdfFile=""):
         del les
         del snapshot
     
+    cloudCover = np.zeros_like(times, dtype=float)
+    cloudCover1 = np.zeros_like(times, dtype=float)
+    cloudCover2 = np.zeros_like(times, dtype=float)
     cloudFraction  = np.zeros((len(cloudFractions[times[0]]),  len(times)))
     cloudFraction1 = np.zeros((len(cloudFractions1[times[0]]), len(times)))
     cloudFraction2 = np.zeros((len(cloudFractions2[times[0]]), len(times)))
@@ -121,6 +136,9 @@ def main(generateGif=False, indicatorFunction="basic", netcdfFile=""):
     times = sorted(times)
     for n in range(len(times)):
         time = times[n]
+        cloudCover[n]  = cloudCovers[time]
+        cloudCover1[n] = cloudCovers1[time]
+        cloudCover2[n] = cloudCovers2[time]
         cloudFraction[:,n] = cloudFractions[time]
         cloudFraction1[:,n] = cloudFractions1[time]
         cloudFraction2[:,n] = cloudFractions2[time]
@@ -130,20 +148,20 @@ def main(generateGif=False, indicatorFunction="basic", netcdfFile=""):
     data = {}
     data["t_cloud_fraction"] = np.array(times)
     data["z_cloud_fraction"] = z
-    data["cloud_fraction"] = cloudFraction
+    data["cloud_cover"]  = cloudCover
+    data["cloud_cover1"] = cloudCover1
+    data["cloud_cover2"] = cloudCover2
+    data["cloud_fraction"]  = cloudFraction
     data["cloud_fraction1"] = cloudFraction1
     data["cloud_fraction2"] = cloudFraction2
     data["cloud_fraction1_sigma1"] = cloudFraction1sigma1
     data["cloud_fraction2_sigma2"] = cloudFraction2sigma2
-    
+    print(data["cloud_cover"])
     folder = os.path.join(folder.outputs, "cloudContour")
     if not os.path.isdir(folder):
         os.makedirs(folder)
     
     savemat(os.path.join(folder, "cloud_fraction.mat"), data)
-    
-    for time in times:
-        print(time)
     
     
 
