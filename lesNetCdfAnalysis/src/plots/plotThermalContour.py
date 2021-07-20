@@ -31,6 +31,17 @@ def plotThermalContour(
         velocityVectorsOnly = False,
         cbarScale = "logarithmic"
     ):
+    if len(y) != len(ql):
+        ql = ql.transpose()
+        
+        if len(I2) != 0:
+            I2 = I2.transpose()
+        
+        if len(w) != 0:
+            w = w.transpose()
+        
+        if len(u) != 0:
+            u = u.transpose()
     
     fig, ax = plt.subplots(1,1,figsize=(int(xlim[1]-xlim[0]),2*int(ylim[1]-ylim[0])))
     
@@ -42,7 +53,7 @@ def plotThermalContour(
     # fig.colorbar(c, ax=ax)
     
     # Plot contours for the structure of the thermals
-    if I2 != []:
+    if len(I2) != 0:
         X, Y = np.meshgrid(x, y)
         
         # Fill regions
@@ -54,7 +65,7 @@ def plotThermalContour(
         
     
     # Plot contours for regions of ascending air
-    if w != [] and not velocityVectorsOnly:
+    if len(w) != 0 and not velocityVectorsOnly:
         X, Y = np.meshgrid(x, y)
         
         # Fill regions
@@ -76,7 +87,7 @@ def plotThermalContour(
             ax.plot([xMin, xMax], [y[j], y[j]], "k", linewidth=0.2, alpha=0.5)
     
     # Show velocity vectors
-    if u != [] and w != []:
+    if len(u) != 0 and len(w) != 0:
         vectorInterval = 100
         X, Y = np.meshgrid(x, y)
         plt.quiver(np.concatenate(X)[::vectorInterval], np.concatenate(Y)[::vectorInterval], np.concatenate(u)[::vectorInterval], np.concatenate(w)[::vectorInterval], angles='xy', color="m", scale=100, headwidth=2)

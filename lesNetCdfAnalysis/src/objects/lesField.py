@@ -5,22 +5,44 @@ Object to store all Large Eddy Simulation data for a single timestep.
 import numpy as np
 
 class lesField:
-    def __init__(self, key, name, data, indexTime, I2=[], w=[], dataOverride=[]):
+    def __init__(
+        self, 
+        key, 
+        name, 
+        data, 
+        keys, 
+        indexTime, 
+        t = False, 
+        x = False, 
+        y = False, 
+        z = False, 
+        I2 = False, 
+        w = False, 
+        dataOverride = False
+    ):
         print("Initialising {} ({}) at snapshot {}".format(name, key, indexTime))
         
-        self.key = key
         self.name = name
+        self.key = key
         
         # Time
-        self.t = data.variables["TIME"][:][indexTime]*1
+        self.t = t
 
         # Range of x, y and z values
-        self.x = data.variables["X"][:]*1
-        self.y = data.variables["Y"][:]*1
-        self.z = data.variables["Z"][:]*1
+        self.x = x
+        self.y = y
+        self.z = z
+        
+        # Axis for computing horizontal averages
+        self.axisXY = (keys.xi, keys.yi)
+        
+        # Other input data
+        I2 = I2
+        w = w
+        dataOverride = dataOverride
         
         # Data for all cells
-        if dataOverride == []:
+        if type(dataOverride) == bool:
             self.field = data.variables[key][:][indexTime]*1
         else:
             self.field = dataOverride
@@ -32,7 +54,7 @@ class lesField:
         self.av = self.horizontalAverage()
         
         # Horizontally averaged fields for fluids 1 and 2
-        if I2 != []:
+        if type(I2) != bool:
             # Mean
             self.fluid1 = self.conditionalAverage(1-I2.field)
             self.fluid2 = self.conditionalAverage(  I2.field)
@@ -49,7 +71,7 @@ class lesField:
             self.fluid1Min, self.fluid1Max = self.conditionalMinMax(1-I2.field)
             self.fluid2Min, self.fluid2Max = self.conditionalMinMax(  I2.field)
             
-            if w != []:
+            if type(w) != bool:
                 # Total flux across all fluids
                 self.flux = self.fluxAll(np.ones_like(I2.field), self.av, w.field, w.av)
                 
@@ -81,23 +103,25 @@ class lesField:
     
     # Get the vertical profile
     def horizontalAverage(self):
-        return np.mean(self.field, axis=(1,2))
+        return np.mean(self.field, axis=self.axisXY)
     
     # Get the vertical profile for regions where the fluid is defined (I)
     def conditionalAverage(self, I):
-        return np.sum(self.field*I, axis=(1,2))/np.sum(I, axis=(1,2))
+        return np.sum(self.field*I, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
     
     # Get the variance profile where the fluid is defined (I)
     def conditionalVariance(self, I, mean):
-        mean = mean.reshape((len(mean),1))
-        return np.sum(I*(self.field-mean[:,None])**2, axis=(1,2))/np.sum(I, axis=(1,2))
+        if len(self.field) == len(mean):
+            return np.sum(I*(self.field-mean[:,None,None])**2, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
+        else:
+            return np.sum(I*(self.field-mean[None,None,:])**2, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
         
     # Get the minimum and maximum values for regions the fluid is defined
     # Could be optimised better.
     def conditionalMinMax(self, I):
         minMaxFieldAll = max(abs(self.max), abs(self.max))
-        minimum = np.min(self.field + 1e3*minMaxFieldAll*(1-I), axis=(1,2))
-        maximum = np.max(self.field - 1e3*minMaxFieldAll*(1-I), axis=(1,2))
+        minimum = np.min(self.field + 1e3*minMaxFieldAll*(1-I), axis=self.axisXY)
+        maximum = np.max(self.field - 1e3*minMaxFieldAll*(1-I), axis=self.axisXY)
         return minimum, maximum
     
     # Get the resolved fluxes
@@ -106,12 +130,16 @@ class lesField:
         
     # Get the total fluxes
     def fluxAll(self, I, fluidMean, w, wMean):
-        fluidMean = fluidMean.reshape((len(fluidMean),1))
-        wMean = wMean.reshape((len(wMean),1))
-        return np.sum(
-            I*(self.field-fluidMean[:,None])*(w - wMean[:,None]), 
-            axis=(1,2)
-        ) / np.sum(I, axis=(1,2))
+        if len(self.field) == len(fluidMean):
+            return np.sum(
+                I*(self.field-fluidMean[:,None,None])*(w - wMean[:,None,None]), 
+                axis=self.axisXY
+            ) / np.sum(I, axis=self.axisXY)
+        else:
+            return np.sum(
+                I*(self.field-fluidMean[None,None,:])*(w - wMean[None,None,:]), 
+                axis=self.axisXY
+            ) / np.sum(I, axis=self.axisXY)
     
     # Alternative flux formulation which use mean values of each fluid rather than overall mean
     def fluxResolvedAlternative(self, fluidMean, wFluidMean):
@@ -120,5 +148,5 @@ class lesField:
     def fluxAllAlternative(self, I, w):
         return np.sum(
             I*self.field*w, 
-            axis=(1,2)
-        ) / np.sum(I, axis=(1,2))
+            axis=self.axisXY
+        ) / np.sum(I, axis=self.axisXY)

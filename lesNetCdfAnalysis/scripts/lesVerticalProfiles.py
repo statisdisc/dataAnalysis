@@ -16,14 +16,23 @@ from src.plots.plotVerticalProfile import plotVerticalProfile
 from src.plots.plotVerticalProfile import plotVerticalFluxes
 
 
-def main(indicatorFunction="basic", netcdfFile=""):
-    
+def main(id="LEM", indicatorFunction="basic", netcdfFile=""):
     
     # Fetch folders for code structure
-    folder = folders(
-        folderScripts = os.path.dirname(os.path.realpath(__file__)),
-        folderData = "/mnt/f/Desktop/LES_Data"
-    )
+    if id == "LEM":
+        folder = folders(
+            id = id,
+            folderScripts = os.path.dirname(os.path.realpath(__file__)),
+            folderData = "/mnt/f/Desktop/LES_Data"
+        )
+    elif id == "MONC":
+        folder = folders(
+            id = id,
+            folderScripts = os.path.dirname(os.path.realpath(__file__)),
+            folderData = "/mnt/c/MONC_ARM"
+        )
+    else:
+        raise ValueError(f"id {id} is not valid.")
     
     if netcdfFile == "":
         # Find all NetCFD files in 
@@ -38,6 +47,7 @@ def main(indicatorFunction="basic", netcdfFile=""):
         # Get Large Eddy Simulation data
         les = getLesData(
             file, 
+            id = id,
             indicatorFunction = indicatorFunction
         )
         
@@ -109,6 +119,14 @@ def main(indicatorFunction="basic", netcdfFile=""):
                 id=indicatorFunction
             )
             
+            plotVerticalProfile(
+                snapshot.z, snapshot.qr,
+                title="Radioactive tracer", 
+                xlabel="$q_r$ (kg/kg)", 
+                folder=folderTime,
+                id=indicatorFunction
+            )
+            
             # Vertical fluxes
             plotVerticalFluxes(
                 snapshot.z, snapshot.u,
@@ -153,14 +171,20 @@ def main(indicatorFunction="basic", netcdfFile=""):
 if __name__ == "__main__":
     timeInit = time.time()
     
-    netcdfFile = "mov0235_ALL_01-_.nc"
+    # id = "LEM"
+    id = "MONC"
     
-    # main(indicatorFunction="basic")
-    main(indicatorFunction="plume")
-    main(indicatorFunction="plumeEdge")
-    # main(indicatorFunction="plumeEdgeEntrain")
-    # main(indicatorFunction="plumeEdgeDetrain")
-    # main(indicatorFunction="dbdz")
+    netcdfFile = ""
+    # netcdfFile = "mov0235_ALL_01-_.nc"
+    # netcdfFile = "mov0235_ALL_01-z.nc"
+    netcdfFile = "diagnostics_3d_ts_30000.nc"
+    
+    # main(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
+    main(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
+    # main(id=id, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
+    # main(id=id, indicatorFunction="plumeEdgeEntrain", netcdfFile=netcdfFile)
+    # main(id=id, indicatorFunction="plumeEdgeDetrain", netcdfFile=netcdfFile)
+    # main(id=id, indicatorFunction="dbdz", netcdfFile=netcdfFile)
     
     timeElapsed = time.time()
     print("Elapsed time: {:.2f}s".format(timeElapsed-timeInit))

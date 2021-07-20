@@ -2,7 +2,7 @@ import os
 import sys
 
 class folders:
-    def __init__(self, folderScripts="", folderData=""):
+    def __init__(self, id="", folderScripts="", folderData=""):
         # Folder containing scripts to execute
         if folderScripts == "":
             folderScripts = sys.path[0]
@@ -20,7 +20,7 @@ class folders:
         self.data = folderData
         
         # Folder for output files and images
-        self.outputs = os.path.join(self.root, "outputs")
+        self.outputs = os.path.join(self.root, "outputs", id)
         
         if not os.path.isdir(self.outputs):
             os.makedirs(self.outputs)
