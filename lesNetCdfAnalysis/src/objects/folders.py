@@ -24,3 +24,6 @@ class folders:
         
         if not os.path.isdir(self.outputs):
             os.makedirs(self.outputs)
+        
+        self.lem  = os.path.join(self.outputs, "LEM")
+        self.monc = os.path.join(self.outputs, "MONC")

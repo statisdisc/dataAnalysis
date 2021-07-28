@@ -60,7 +60,7 @@ def main(id="LEM", indicatorFunction="basic", netcdfFile=""):
                 os.makedirs(folderTime)
             
             snapshot = les.data[n]
-            
+            print(snapshot.I2.av)
             plotVolumeFraction(
                 snapshot.z, snapshot.I2,
                 folder=folderTime,
@@ -171,13 +171,13 @@ def main(id="LEM", indicatorFunction="basic", netcdfFile=""):
 if __name__ == "__main__":
     timeInit = time.time()
     
-    # id = "LEM"
-    id = "MONC"
+    id = "LEM"
+    # id = "MONC"
     
     netcdfFile = ""
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
-    netcdfFile = "diagnostics_3d_ts_30000.nc"
+    # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
     # main(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
     main(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
