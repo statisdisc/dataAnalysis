@@ -12,13 +12,14 @@ sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) )
 from src.objects.folders import folders
 from src.utilities.getLesData import getLesData
 from src.utilities.getScmData import getScmData
+from src.utilities.timeElapsed import timeElapsed
 from src.plots.plotTransferredProperties import plotTransferredProperties
 from src.plots.plotLEMvsMONC import plotVolumeFractionComparison
 from src.plots.plotLEMvsMONC import plotVerticalProfileComparison
 from src.plots.plotVerticalProfileComparison import plotVerticalFluxes
 
-
-def main(
+@timeElapsed
+def compareLEMvsMONC(
         indicatorLEM  = "plume", 
         indicatorMONC = "plume", 
         timesLEM  = [14000],
@@ -113,10 +114,7 @@ def main(
         
 
 if __name__ == "__main__":
-    timeInit = time.time()
-    main(
+    compareLEMvsMONC(
         timesLEM  = range(14000, 43400, 600),
         timesMONC = range(13800, 43200, 600)
     )
-    timeElapsed = time.time() - timeInit
-    print(f"Elapsed time: {timeElapsed:.2f}s")

@@ -31,8 +31,6 @@ def plotVolumeFractionComparison(
     
     ax0.plot(profileMONC["sigma2"], profileMONC["z"], "w", linewidth=1.)
     ax0.plot(profileMONC["sigma2"], profileMONC["z"], "r--", linewidth=1.)
-    print(profileMONC["sigma2"])
-    # ax0.plot(profile1["av"],     profile1["z"], "k", linewidth=0.5)    
     
     # Limits and labels
     # ax0.set_xlim(profile1["min"], profile1["max"])
