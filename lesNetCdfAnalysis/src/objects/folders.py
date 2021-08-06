@@ -18,6 +18,7 @@ class folders:
         if folderData == "":
             folderData = os.path.join(self.root, "data")
         self.data = folderData
+        self.data1d = os.path.join(self.data, "1d")
         
         # Folder for output files and images
         self.outputs = os.path.join(self.root, "outputs", id)

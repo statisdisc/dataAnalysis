@@ -71,9 +71,11 @@ class dataLabel:
                 warnings.warn("No matching indicator type '{}'. Using default value.".format(indicatorType))
                 self.qr = "Q03"
         # MONC variable names
-        elif id == "MONC":
+        elif id == "MONC" or id == "MONC1D":
             # Time coordinate
             self.t = "time_series_600_600"
+            if id == "MONC1D":
+                self.t = "time_series_60_60"
             # Spacial coordinate, horizontal, x-axis
             self.x = False
             # Spacial coordinate, horizontal, y-axis
