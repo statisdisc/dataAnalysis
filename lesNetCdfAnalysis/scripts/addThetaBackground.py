@@ -43,21 +43,22 @@ def addThetaBackground(
     for n,t in enumerate(timesMONC):
         print("Processing timestep {} of {}".format(n+1, len(timesMONC)))
         
-        # filenameTheta = os.path.join(folder.monc, "time_{}".format(timesMONC[n]), "profilesMean", indicatorMONC, "z_theta.npz")
-        filenameTheta = os.path.join(folder.monc, "time_{}".format(timesMONC[n]), "profilesMean", indicatorMONC, "z_theta_uncorrected.npz")
+        # filenameTheta = os.path.join(folder.monc, "time_{}".format(timesMONC[n]), "profilesMean", indicatorMONC, "z_th.npz")
+        filenameTheta = os.path.join(folder.monc, "time_{}".format(timesMONC[n]), "profilesMean", indicatorMONC, "z_th_uncorrected.npz")
         
         dataTheta = np.load(filenameTheta)
         dataTheta = {key:dataTheta[key] for key in dataTheta}
         
         # Save old profiles for safe-keeping
-        np.savez(filenameTheta.replace("z_theta.npz", "z_theta_uncorrected.npz"), **dataTheta)
+        np.savez(filenameTheta.replace("z_th.npz", "z_th_uncorrected.npz"), **dataTheta)
         
         # Add the missing mean profiles to the vertical distributions
         fields = ["av", "fluid1", "fluid2", "fluid1Min", "fluid1Max", "fluid2Min", "fluid2Max"]
+        thetaMoncMean = dataTheta["av"]
         for field in fields:
-            dataTheta[field] = dataAll[float(t)]["theta_mean"] + dataTheta[field]
+            dataTheta[field] = dataAll[float(t)]["theta_mean"] - thetaMoncMean + dataTheta[field]
         
-        np.savez(filenameTheta.replace("z_theta_uncorrected.npz", "z_theta.npz"), **dataTheta)
+        np.savez(filenameTheta.replace("z_th_uncorrected.npz", "z_th.npz"), **dataTheta)
         
 
 if __name__ == "__main__":

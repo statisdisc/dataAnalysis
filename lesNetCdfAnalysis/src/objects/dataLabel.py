@@ -26,7 +26,13 @@ class dataLabel:
         # Vertical velocity, z-axis
         self.w = "w"
         # Potential temperature
-        self.theta = "theta"
+        self.th = "theta"
+        # Virtual temperature
+        self.thv = "theta"
+        # Buoyancy
+        self.b = "b"
+        # Specific humidity, total moisture
+        self.q = "q"
         # Specific humidity, water vapour
         self.qv = "qv"
         # Specific humidity, liquid water
@@ -57,7 +63,9 @@ class dataLabel:
             # Vertical velocity, z-axis
             self.w = "W"
             # Potential temperature
-            self.theta = "THETA"
+            self.th = "THETA"
+            # Specific humidity, total moisture
+            self.q = "Q"
             # Specific humidity, water vapour
             self.qv = "Q01"
             # Specific humidity, liquid water
@@ -95,7 +103,9 @@ class dataLabel:
             # Vertical velocity, z-axis
             self.w = "w"
             # Potential temperature
-            self.theta = "th"
+            self.th = "th"
+            # Specific humidity, total moisture
+            self.q = "q"
             # Specific humidity, water vapour
             self.qv = "q_vapour"
             # Specific humidity, liquid water

@@ -12,13 +12,13 @@ class lesField:
         data, 
         keys, 
         indexTime, 
-        t = False, 
-        x = False, 
-        y = False, 
-        z = False, 
-        I2 = False, 
-        w = False, 
-        dataOverride = False
+        t  = None, 
+        x  = None, 
+        y  = None, 
+        z  = None, 
+        I2 = None, 
+        w  = None, 
+        dataOverride = None
     ):
         print("Initialising {} ({}) at snapshot {}".format(name, key, indexTime))
         
@@ -36,117 +36,223 @@ class lesField:
         # Axis for computing horizontal averages
         self.axisXY = (keys.xi, keys.yi)
         
-        # Other input data
-        I2 = I2
-        w = w
-        dataOverride = dataOverride
-        
         # Data for all cells
-        if type(dataOverride) == bool:
+        if dataOverride is None:
             self.field = data.variables[key][:][indexTime]*1
         else:
             self.field = dataOverride
         
-        self.min = np.min(self.field)
-        self.max = np.max(self.field)
-        
+        self.calculateVerticalProfiles(I2=I2, w=w)
+    
+    def calculateVerticalProfiles(self, I2=None, w=None):
+        '''
+        Calculate all vertical (horizontally averaged) profiles
+        '''
+        self.calculateMeans(I2=I2)
+        self.calculateMinMax(I2=I2)
+        self.calculateVariances(I2=I2)
+        self.calculateCovariances(I2=I2, w=w)
+    
+    def calculateMeans(self, I2=None):
+        '''
+        Calculate the horizontal mean profiles.
+        :param I2: Indicator function for fluid 2 with same dimensions as self.field, np.ndarray.
+        :return: None.
+        '''
         # Horizontally averaged field
         self.av = self.horizontalAverage()
         
         # Horizontally averaged fields for fluids 1 and 2
-        if type(I2) != bool:
-            # Mean
+        self.fluid1 = None
+        self.fluid2 = None
+        if I2 is not None:
             self.fluid1 = self.conditionalAverage(1-I2.field)
             self.fluid2 = self.conditionalAverage(  I2.field)
-            
-            # Variance
-            self.fluid1Var = self.conditionalVariance(1-I2.field, self.fluid1)
-            self.fluid2Var = self.conditionalVariance(  I2.field, self.fluid2)
-            
-            # Standard Deviation
-            self.fluid1Std = np.sqrt(self.fluid1Var)
-            self.fluid2Std = np.sqrt(self.fluid2Var)
-            
-            # Minima and Maxima
+    
+    def calculateMinMax(self, I2=None):
+        # Global minima and maxima
+        self.min = np.min(self.field)
+        self.max = np.max(self.field)
+        
+        # Minima and maxima in each fluid
+        self.fluid1Min, self.fluid1Max = None, None
+        self.fluid2Min, self.fluid2Max = None, None
+        if I2 is not None:
             self.fluid1Min, self.fluid1Max = self.conditionalMinMax(1-I2.field)
             self.fluid2Min, self.fluid2Max = self.conditionalMinMax(  I2.field)
+    
+    def calculateVariances(self, I2=None):
+        '''
+        Calculate the horizontally averaged variance profiles.
+        :param I2: Indicator function for fluid 2 with same dimensions as self.field, np.ndarray.
+        :return: None.
+        '''
+        # Total flux across all fluids summed over each height level
+        self.var = self.varianceAll(np.ones_like(self.field), self.av)
+        self.std = np.sqrt(self.var)
+        
+        self.fluid1VarAll      = None
+        self.fluid2VarAll      = None
+        self.fluid1VarResolved = None
+        self.fluid2VarResolved = None
+        self.fluid1VarSubgrid  = None
+        self.fluid2VarSubgrid  = None
+        self.fluid1StdAll      = None
+        self.fluid2StdAll      = None
+        self.fluid1StdResolved = None
+        self.fluid2StdResolved = None
+        self.fluid1StdSubgrid  = None
+        self.fluid2StdSubgrid  = None
+        
+        if I2 is not None:
+            # The volume-fraction-weighted total fluxes summed over each height level
+            self.fluid1VarAll = self.varianceAll(1-I2.field, self.av)
+            self.fluid2VarAll = self.varianceAll(  I2.field, self.av)
             
-            if type(w) != bool:
-                # Total flux across all fluids
-                self.flux = self.fluxAll(np.ones_like(I2.field), self.av, w.field, w.av)
-                
-                # Resolved fluxes
-                self.fluid1FluxResolved = (1-I2.av)*self.fluxResolved(self.fluid1, w.fluid1, w.av)
-                self.fluid2FluxResolved =    I2.av *self.fluxResolved(self.fluid2, w.fluid2, w.av)
-                
-                # Subfilter fluxes
-                self.fluid1FluxSubgrid = (1-I2.av)*self.fluxAll(
+            # Volume-fraction-weighted fluxes from resolved variables only (vertical profiles)
+            self.fluid1VarResolved = self.varianceResolved(self.fluid1)
+            self.fluid2VarResolved = self.varianceResolved(self.fluid2)
+            
+            # Subfilter fluxes - The un-accounted-for flux not picked up by the resolved contribution
+            self.fluid1VarSubgrid = self.fluid1VarAll - self.fluid1VarResolved
+            self.fluid2VarSubgrid = self.fluid2VarAll - self.fluid2VarResolved
+            
+            # Standard deviations
+            self.fluid1StdAll      = np.sqrt(self.fluid1VarAll)
+            self.fluid2StdAll      = np.sqrt(self.fluid2VarAll)
+            self.fluid1StdResolved = np.sqrt(self.fluid1VarResolved)
+            self.fluid2StdResolved = np.sqrt(self.fluid2VarResolved)
+            self.fluid1StdSubgrid  = np.sqrt(self.fluid1VarSubgrid)
+            self.fluid2StdSubgrid  = np.sqrt(self.fluid2VarSubgrid)
+    
+    def calculateCovariances(self, I2=None, w=None):
+        '''
+        Calculate the horizontally averaged covariance profiles.
+        Currently set-up for the vertical fluxes.
+        :param I2: Indicator function for fluid 2 with same dimensions as self.field, np.ndarray.
+        :param w: The vertical velocity field with same dimensions as self.field, np.ndarray.
+        :return: None.
+        '''
+        self.flux = None
+        self.fluid1FluxAll = None
+        self.fluid2FluxAll = None
+        self.fluid1FluxResolved = None
+        self.fluid2FluxResolved = None
+        self.fluid1FluxSubgrid = None
+        self.fluid2FluxSubgrid = None
+        
+        if w is not None:
+            # Total flux across all fluids summed over each height level
+            self.flux = self.covarianceAll(np.ones_like(self.field), self.av, w.field, w.av)
+            
+            if I2 is not None: 
+                # The volume-fraction-weighted total fluxes summed over each height level
+                self.fluid1FluxAll = (1-I2.av)*self.covarianceAll(
                     1-I2.field,
                     self.av, 
                     w.field, 
                     w.av
-                ) - self.fluid1FluxResolved
-                self.fluid2FluxSubgrid = I2.av*self.fluxAll(
+                )
+                self.fluid2FluxAll = I2.av*self.covarianceAll(
                     I2.field, 
                     self.av, 
                     w.field, 
                     w.av
-                ) - self.fluid2FluxResolved
+                )
                 
-                # Resolved fluxes
-                # self.fluid1FluxResolved = (1-I2.av)*self.fluxResolvedAlternative(self.fluid1, w.fluid1)
-                # self.fluid2FluxResolved =    I2.av *self.fluxResolvedAlternative(self.fluid2, w.fluid2)
+                # Volume-fraction-weighted fluxes from resolved variables only (vertical profiles)
+                self.fluid1FluxResolved = (1-I2.av)*self.covarianceResolved(self.fluid1, w.fluid1, w.av)
+                self.fluid2FluxResolved =    I2.av *self.covarianceResolved(self.fluid2, w.fluid2, w.av)
                 
-                # Subfilter fluxes
-                # self.fluid1FluxSubgrid = (1-I2.av)*self.fluxAllAlternative(1-I2.field, w.field) - self.fluid1FluxResolved
-                # self.fluid2FluxSubgrid =    I2.av *self.fluxAllAlternative(  I2.field, w.field) - self.fluid2FluxResolved
+                # Subfilter fluxes - The un-accounted-for flux not picked up by the resolved contribution
+                self.fluid1FluxSubgrid = self.fluid1FluxAll - self.fluid1FluxResolved
+                self.fluid2FluxSubgrid = self.fluid2FluxAll - self.fluid2FluxResolved
     
-    # Get the vertical profile
     def horizontalAverage(self):
+        '''
+        Return the vertical profile (horizontal mean)
+        '''
         return np.mean(self.field, axis=self.axisXY)
     
-    # Get the vertical profile for regions where the fluid is defined (I)
     def conditionalAverage(self, I):
+        '''
+        Get the vertical profile for regions where the fluid is defined (I)
+        '''
         return np.sum(self.field*I, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
     
-    # Get the variance profile where the fluid is defined (I)
     def conditionalVariance(self, I, mean):
+        '''
+        Get the variance profile where the fluid is defined (I)
+        '''
         if len(self.field) == len(mean):
             return np.sum(I*(self.field-mean[:,None,None])**2, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
         else:
             return np.sum(I*(self.field-mean[None,None,:])**2, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
-        
-    # Get the minimum and maximum values for regions the fluid is defined
-    # Could be optimised better.
+    
     def conditionalMinMax(self, I):
+        '''
+        Get the minimum and maximum values for regions the fluid is defined
+        *Could be optimised better*
+        '''
         minMaxFieldAll = max(abs(self.max), abs(self.max))
         minimum = np.min(self.field + 1e3*minMaxFieldAll*(1-I), axis=self.axisXY)
         maximum = np.max(self.field - 1e3*minMaxFieldAll*(1-I), axis=self.axisXY)
         return minimum, maximum
     
-    # Get the resolved fluxes
-    def fluxResolved(self, fluidMean, wFluidMean, wMean):
-        return (fluidMean - self.av)*(wFluidMean - wMean)
+    def varianceResolved(self, fluidMean):
+        '''
+        Get the variance from the vertical profiles only
+        '''
+        return (fluidMean - self.av)**2
         
-    # Get the total fluxes
-    def fluxAll(self, I, fluidMean, w, wMean):
+    def varianceAll(self, I, mean):
+        '''
+        Get the variance summed over each height level
+        '''
+        if len(self.field) == len(mean):
+            return np.sum(I*(self.field-mean[:,None,None])**2, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
+        else:
+            return np.sum(I*(self.field-mean[None,None,:])**2, axis=self.axisXY)/np.sum(I, axis=self.axisXY)
+    
+    def covarianceResolved(self, fluidMean, phiFluidMean, phiMean):
+        '''
+        Get the covariance with phi from the vertical profiles only
+        '''
+        return (fluidMean - self.av)*(phiFluidMean - phiMean)
+        
+    def covarianceAll(self, I, fluidMean, phi, phiMean):
+        '''
+        Get the covariance with phi summed over each height level
+        '''
         if len(self.field) == len(fluidMean):
             return np.sum(
-                I*(self.field-fluidMean[:,None,None])*(w - wMean[:,None,None]), 
+                I*(self.field-fluidMean[:,None,None])*(phi - phiMean[:,None,None]), 
                 axis=self.axisXY
             ) / np.sum(I, axis=self.axisXY)
         else:
             return np.sum(
-                I*(self.field-fluidMean[None,None,:])*(w - wMean[None,None,:]), 
+                I*(self.field-fluidMean[None,None,:])*(phi - phiMean[None,None,:]), 
                 axis=self.axisXY
             ) / np.sum(I, axis=self.axisXY)
     
-    # Alternative flux formulation which use mean values of each fluid rather than overall mean
-    def fluxResolvedAlternative(self, fluidMean, wFluidMean):
-        return fluidMean*wFluidMean
+    def covarianceResolvedAlt(self, fluidMean, phiFluidMean):
+        '''
+        Alternative flux formulation which use mean values of each fluid rather than overall mean
+        '''
+        return fluidMean*phiFluidMean
     
-    def fluxAllAlternative(self, I, w):
+    def covarianceAllAlt(self, I, phi):
+        '''
+        Alternative flux formulation which use mean values of each fluid rather than overall mean
+        '''
         return np.sum(
-            I*self.field*w, 
+            I*self.field*phi, 
             axis=self.axisXY
         ) / np.sum(I, axis=self.axisXY)
+    
+    def updateField(self, field):
+        '''
+        Update the field and re-calculate the diagnostics
+        '''
+        self.field = field
+        self.calculateVerticalProfiles()

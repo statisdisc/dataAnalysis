@@ -8,7 +8,17 @@ from .dataLabel import dataLabel
 from .lesField  import lesField
 
 class lesDataSnapshot:
-    def __init__(self, data, indexTime, id="", indicatorType="shallow", indicatorFunction="plume"):
+    g = 9.81
+    
+    def __init__(
+        self, 
+        data, 
+        indexTime, 
+        id = "", 
+        indicatorType = "shallow", 
+        indicatorFunction = "plume",
+        thetaMean = 0
+    ):
         
         # Keys for data set
         self.keys = dataLabel(id=id, indicatorType=indicatorType)
@@ -49,6 +59,8 @@ class lesDataSnapshot:
         '''
         Data for all cells
         '''
+        coords = dict(t=self.t, x=self.x, y=self.y, z=self.z)
+        
         # Diagnose indicator function which shows the locations of the updraft fluid (fluid 2)
         self.I2 = lesField(
             "I2", "I2", data, self.keys, indexTime, 
@@ -57,29 +69,54 @@ class lesDataSnapshot:
                 data.variables[self.keys.u][indexTime],
                 data.variables[self.keys.v][indexTime],
                 data.variables[self.keys.w][indexTime],
-                data.variables[self.keys.theta][indexTime],
+                data.variables[self.keys.th][indexTime],
                 data.variables[self.keys.qv][indexTime],
                 data.variables[self.keys.ql][indexTime]
             ), 
-            t=self.t, x=self.x, y=self.y, z=self.z
+            **coords
         )
         
         # Velocity component in the z-direction (vertical velocity)
-        self.w = lesField(self.keys.w, "w", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2)
+        self.w  = lesField(self.keys.w,  "w",  data, self.keys, indexTime, **coords, I2=self.I2)
         # Velocity component in the x-direction
-        self.u = lesField(self.keys.u, "u", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2, w=self.w)
+        self.u  = lesField(self.keys.u,  "u",  data, self.keys, indexTime, **coords, I2=self.I2, w=self.w)
         # Velocity component in the y-direction
-        self.v = lesField(self.keys.v, "v", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2, w=self.w)
+        self.v  = lesField(self.keys.v,  "v",  data, self.keys, indexTime, **coords, I2=self.I2, w=self.w)
         # Potential temperature
-        self.theta = lesField(self.keys.theta, "theta", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2, w=self.w)
+        self.th = lesField(self.keys.th, "th", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w)
         # Water vapour
-        self.qv = lesField(self.keys.qv, "qv", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2, w=self.w)
+        self.qv = lesField(self.keys.qv, "qv", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w)
         # Liquid water
-        self.ql = lesField(self.keys.ql, "ql", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2, w=self.w)
+        self.ql = lesField(self.keys.ql, "ql", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w)
         # Radioactive tracer for shallow convection (timescale 15 mins) or deep convection (timescale 35 mins)
-        self.qr = lesField(self.keys.qr, "qr", data, self.keys, indexTime, t=self.t, x=self.x, y=self.y, z=self.z, I2=self.I2)
+        self.qr = lesField(self.keys.qr, "qr", data, self.keys, indexTime, **coords, I2=self.I2)
         
+        # Derived total moisture
+        self.q  = lesField(self.keys.q,  "q",  data, self.keys, indexTime, **coords, I2=self.I2, w=self.w, 
+            dataOverride = self.qv.field + self.ql.field
+        )
         
+        # Potential temperature with an added vertical profile if available
+        if isinstance(thetaMean, np.ndarray):
+            print("Adding mean profile to the potential temperature")
+            self.th = lesField(self.keys.th, "th", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w,
+                dataOverride = data.variables[self.keys.th][indexTime] + thetaMean - self.th.av
+            )
+        
+        # Derived virtual potential temperature
+        self.thv = lesField(self.keys.thv, "thv", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w,
+            dataOverride = self.th.field * (1 + 0.61*self.qv.field/(1-self.qv.field) - self.ql.field/(1-self.ql.field))
+        )
+        
+        # Derived buoyancy
+        if len(self.thv.av) == len(self.thv.field):
+            self.b = lesField(self.keys.b, "b", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w,
+                dataOverride = self.g*(self.thv.field - self.thv.av[:,None,None])/self.thv.av[:,None,None]
+            )
+        else:
+            self.b = lesField(self.keys.b, "b", data, self.keys, indexTime, **coords, I2=self.I2, w=self.w,
+                dataOverride = self.g*(self.thv.field - self.thv.av[None,None,:])/self.thv.av[None,None,:]
+            )
     
     def getUpdraftIndicator(self, q, u, v, w, theta, qv, ql, indicatorFunctionOverride=False):
         "Get updraft indicator function for a given radioactive tracer q."
