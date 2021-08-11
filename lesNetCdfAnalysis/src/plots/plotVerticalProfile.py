@@ -48,10 +48,19 @@ def plotVolumeFraction(
     
     # Save vertical profiles for future use
     np.savez(
-        os.path.join(folderVertical, "z_profile_sigma.npz"), 
+        os.path.join(folderVertical, "z_sigma.npz"), 
         z = z,
         sigma1 = 1.-I2.av,
         sigma2 =    I2.av
+    )
+    
+    savemat(
+        os.path.join(folderVertical, f"z_sigma.mat"), 
+        {
+            "z": z,
+            "sigma_1": 1.-I2.av,
+            "sigma_2":    I2.av
+        }
     )
 
 # Plot horizontally averaged fields and their range of values
@@ -98,7 +107,7 @@ def plotVerticalProfile(
     ax0.plot(field.av,     zkm, "k", linewidth=1.)    
     
     # Limits and labels
-    ax0.set_xlim(field.min, field.max)
+    ax0.set_xlim(field.min, field.max + field.max==0)
     ax0.set_ylim(np.min(zkm), np.max(zkm))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
@@ -154,12 +163,12 @@ def plotVerticalProfile(
                 f"{name}": field.av,
                 f"{name}_min": field.min,
                 f"{name}_max": field.max,
-                f"{name}1": field.fluid1,
-                f"{name}2": field.fluid2,
-                f"{name}1_min": field.fluid1Min,
-                f"{name}2_min": field.fluid2Min,
-                f"{name}1_max": field.fluid1Max,
-                f"{name}2_max": field.fluid2Max
+                f"{name}_1": field.fluid1,
+                f"{name}_2": field.fluid2,
+                f"{name}_1_min": field.fluid1Min,
+                f"{name}_2_min": field.fluid2Min,
+                f"{name}_1_max": field.fluid1Max,
+                f"{name}_2_max": field.fluid2Max
             }
         )
 
@@ -193,7 +202,7 @@ def plotVerticalVariances(
     
     # Limits and labels
     maximum = np.max(np.maximum.reduce([field.fluid1VarResolved, field.fluid2VarResolved, field.fluid1VarSubgrid, field.fluid2VarSubgrid, field.var]))
-    ax0.set_xlim(0, 1.1*maximum)
+    ax0.set_xlim(0, 1.1*maximum + maximum==0)
     ax0.set_ylim(np.min(z), np.max(z))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
@@ -216,7 +225,7 @@ def plotVerticalVariances(
     
     # Save vertical profiles for future use
     np.savez(
-        os.path.join(folderVar, "z_profile_variance_{}.npz".format(field.name)), 
+        os.path.join(folderVar, "z_{0}{0}.npz".format(field.name)), 
         z = z,
         fluid1FluxResolved = field.fluid1VarResolved,
         fluid2FluxResolved = field.fluid2VarResolved,
@@ -270,7 +279,7 @@ def plotVerticalFluxes(
         abs(min(np.min(field.fluid1FluxResolved), np.min(field.fluid2FluxResolved))),
         abs(max(np.max(field.fluid1FluxResolved), np.max(field.fluid2FluxResolved)))
     )
-    ax0.set_xlim(-1.2*minMax, 1.2*minMax)
+    ax0.set_xlim(-1.2*minMax, 1.2*minMax + minMax==0)
     ax0.set_ylim(np.min(z), np.max(z))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")
@@ -293,7 +302,7 @@ def plotVerticalFluxes(
     
     # Save vertical profiles for future use
     np.savez(
-        os.path.join(folderFluxes, "z_profile_flux_{}.npz".format(field.name)), 
+        os.path.join(folderFluxes, "z_w{}.npz".format(field.name)), 
         z = z,
         fluid1FluxResolved = field.fluid1FluxResolved,
         fluid2FluxResolved = field.fluid2FluxResolved,

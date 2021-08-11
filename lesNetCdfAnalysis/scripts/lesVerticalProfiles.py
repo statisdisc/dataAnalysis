@@ -70,8 +70,8 @@ def main(id="LEM", indicatorFunction="basic", netcdfFile="", thetaMean=None):
         files = [os.path.join(folder.data, netcdfFile)]
     
     
-    for file in files:
-        print(f"\nProcessing file: {file}")
+    for i,file in enumerate(files):
+        print(f"\nProcessing 3D file: {file} (file {i} of {len(files)})")
         
         # Get Large Eddy Simulation data
         les = getLesData(
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     netcdfFile = ""
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
-    netcdfFile = "diagnostics_3d_ts_30000.nc"
+    # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
     # main(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
     main(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
