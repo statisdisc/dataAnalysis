@@ -13,6 +13,7 @@ from src.objects.folders import folders
 from src.utilities.checkFolder import getFilesInFolder
 from src.utilities.makeGif import makeGif
 from src.utilities.getLesData import getLesData
+from src.utilities.timeElapsed import timeElapsed
 from src.plots.plotCloudFraction import plotCloudFraction
 
 # Get the cloud cover
@@ -27,7 +28,8 @@ def horizontalAverage(field, axis=(1,2)):
 def conditionalAverage(field, I, axis=(1,2)):
     return np.sum(field*I, axis=axis)/np.sum(I, axis=axis)
 
-def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
+@timeElapsed
+def cloudFractionContour(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None):
     
     
     # Fetch folders for code structure
@@ -46,11 +48,11 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
     else:
         raise ValueError(f"id {id} is not valid.")
     
-    if netcdfFile == "":
-        # Find all NetCFD files in 
-        files = getFilesInFolder(folder.data, extension=".nc")
-    else:
+    if netcdfFile:
         files = [os.path.join(folder.data, netcdfFile)]
+    else:
+        # Get all available NetCFD files
+        files = getFilesInFolder(folder.data, extension=".nc")
     
     times = []
     cloudTops = {}
@@ -64,13 +66,8 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
     cloudFractions1sigma1 = {}
     cloudFractions2sigma2 = {}
     
-    counter = 0
-    for file in files:
-        counter += 1
-        # if counter == 3:
-            # break
-        
-        print(f"\nProcessing file {counter}: {file}")
+    for i,file in enumerate(files):
+        print(f"\nProcessing 3D file: {file} (file {i+1} of {len(files)})")
         
         # Get Large Eddy Simulation data
         les = getLesData(
@@ -194,17 +191,12 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
     
 
 if __name__ == "__main__":
-    timeInit = time.time()
-    
     id = "LEM"
     # id = "MONC"
     
-    netcdfFile = ""
+    netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
     # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
-    main(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
-    
-    timeElapsed = time.time() - timeInit
-    print("Elapsed time: {timeElapsed:.2f}s")
+    cloudFractionContour(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)

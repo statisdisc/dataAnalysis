@@ -13,6 +13,7 @@ from src.objects.folders import folders
 from src.objects.lesDataMonc1D import lesDataMonc1D
 from src.utilities.checkFolder import getFilesInFolder
 from src.utilities.getLesData import getLesData
+from src.utilities.timeElapsed import timeElapsed
 from src.plots.plotVerticalProfile import plotVolumeFraction
 from src.plots.plotVerticalProfile import plotVerticalProfile
 from src.plots.plotVerticalProfile import plotVerticalFluxes
@@ -43,7 +44,8 @@ def get1dProfiles(folderData, key=None):
     
     return dataAll
 
-def main(id="LEM", indicatorFunction="basic", netcdfFile="", thetaMean=None):
+@timeElapsed
+def lesVerticalProfiles(id="LEM", indicatorFunction="basic", netcdfFile=None, thetaMean=None):
     
     # Fetch folders for code structure
     if id == "LEM":
@@ -63,15 +65,15 @@ def main(id="LEM", indicatorFunction="basic", netcdfFile="", thetaMean=None):
     else:
         raise ValueError(f"id {id} is not valid.")
     
-    if netcdfFile == "":
-        # Find all NetCFD files in 
-        files = getFilesInFolder(folder.data, extension=".nc")
-    else:
+    if netcdfFile:
         files = [os.path.join(folder.data, netcdfFile)]
+    else:
+        # Get all available NetCFD files
+        files = getFilesInFolder(folder.data, extension=".nc")
     
     
     for i,file in enumerate(files):
-        print(f"\nProcessing 3D file: {file} (file {i} of {len(files)})")
+        print(f"\nProcessing 3D file: {file} (file {i+1} of {len(files)})")
         
         # Get Large Eddy Simulation data
         les = getLesData(
@@ -318,22 +320,17 @@ def main(id="LEM", indicatorFunction="basic", netcdfFile="", thetaMean=None):
             # )
 
 if __name__ == "__main__":
-    timeInit = time.time()
+    id = "LEM"
+    # id = "MONC"
     
-    # id = "LEM"
-    id = "MONC"
-    
-    netcdfFile = ""
+    netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
     # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
-    # main(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
-    main(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
-    # main(id=id, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
-    # main(id=id, indicatorFunction="plumeEdgeEntrain", netcdfFile=netcdfFile)
-    # main(id=id, indicatorFunction="plumeEdgeDetrain", netcdfFile=netcdfFile)
-    # main(id=id, indicatorFunction="dbdz", netcdfFile=netcdfFile)
-    
-    timeElapsed = time.time()
-    print("Elapsed time: {:.2f}s".format(timeElapsed-timeInit))
+    # lesVerticalProfiles(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
+    lesVerticalProfiles(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, indicatorFunction="plumeEdgeEntrain", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, indicatorFunction="plumeEdgeDetrain", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, indicatorFunction="dbdz", netcdfFile=netcdfFile)
