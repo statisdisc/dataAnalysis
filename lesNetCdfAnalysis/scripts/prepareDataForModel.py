@@ -110,7 +110,7 @@ def prepareData(
                         )
     
     print("Adding cloud timeseries as well")
-    folderCloud = os.path.join(folder.outputs, id)
+    folderCloud = os.path.join(folder.outputs, id, "cloudContour")
     dataCloud = loadProfiles("cloud_fraction.mat", folder=folderCloud)
     
     for profile in dataCloud.keys():
