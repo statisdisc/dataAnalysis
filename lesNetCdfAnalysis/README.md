@@ -10,6 +10,13 @@ or
 ```
 git clone "https://github.com/statisdisc/dataAnalysis/lesNetCdfAnalysis"
 ```
+Use the package manager ```pip``` to install the Python modules which are required:
+
+```pip install -r requirements.txt```
+or
+```pip3 install -r requirements.txt```
+
+
 To create gif animations, [ImageMagick](https://imagemagick.org/script/download.php) is required.
 If you get a ```cache resources exhausted``` error when compiling gifs, you may need to increase the allowed resources for ImageMagick. Do this by edition the policy.xml file (which may be located in /etc/ImageMagick-VERSION/) from
 ```
