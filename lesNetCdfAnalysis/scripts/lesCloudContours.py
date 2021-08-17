@@ -13,12 +13,12 @@ sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) )
 from src.objects.folders import folders
 from src.utilities.makeGif import makeGif
 from src.utilities.getLesData import getLesData
+from src.utilities.timeElapsed import timeElapsed
 from src.plots.plotThermalContour import plotThermalContour
 
 
-
-def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
-    
+@timeElapsed
+def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None):
     
     # Fetch folders for code structure
     if id == "LEM":
@@ -34,13 +34,13 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
             folderData = "/mnt/c/MONC_ARM"
         )
     else:
-        raise ValueError(f"id {id} is not valid.")
+        raise ValueError(f"id {id} is not valid. Use LEM or MONC.")
     
-    if netcdfFile == "":
+    if netcdfFile:
+        files = [os.path.join(folder.data, netcdfFile)]
+    else:
         # Find all NetCFD files in 
         files = getFilesInFolder(folder.data, extension=".nc")
-    else:
-        files = [os.path.join(folder.data, netcdfFile)]
     
     
     for file in files:
@@ -142,62 +142,6 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
                     w=snapshot.w.field[:,j,:]
                 )
                 
-                # break
-            
-            # Plot slices at fixed locations on the x-axis
-            for i in imagesIndices:
-                layer = snapshot.x[i]*1e-3
-                title = "x = {:.2f}km (id={})".format(layer, i+1)
-                print("YZ layer {} ({})".format(i+1, title))
-                
-                # Plot with only clouds
-                plotThermalContour(
-                    snapshot.y*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,:,i],
-                    id="{}_yz_cloud".format(i),
-                    title=title,
-                    xlabel="y (km)",
-                    folder=folderTime
-                )
-                
-                # Plot including structure of thermals below clouds
-                plotThermalContour(
-                    snapshot.y*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,:,i],
-                    id="{}_yz_cloud+thermal".format(i),
-                    title=title,
-                    xlabel="y (km)",
-                    folder=folderTime,
-                    I2=snapshot.I2.field[:,:,i]
-                )
-                
-                # Plot including regions of positive vertical velocity (updrafts)
-                plotThermalContour(
-                    snapshot.y*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,:,i],
-                    id="{}_yz_cloud+updraft".format(i),
-                    title=title,
-                    xlabel="y (km)",
-                    folder=folderTime,
-                    # u=(snapshot.v.field-snapshot.v.av[:,None,None])[:,:,i],
-                    w=snapshot.w.field[:,:,i]
-                )
-                
-                # Plot including structure of thermals and vertical velocity
-                plotThermalContour(
-                    snapshot.y*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,:,i],
-                    id="{}_yz_cloud+thermal+updraft".format(i),
-                    title=title,
-                    xlabel="y (km)",
-                    folder=folderTime,
-                    I2=snapshot.I2.field[:,:,i],
-                    w=snapshot.w.field[:,:,i]
-                )
         
         
         # Remove les data to clear memory
@@ -210,7 +154,6 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
             for n in range(totalTimesteps):
                 folderTime = os.path.join(folder.outputs, "timestep_{}".format(n))
                 imageListContourXZ = []
-                imageListContourYZ = []
                 
                 for k in imagesIndices:
                     print(k)
@@ -235,45 +178,19 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=""):
                             "contour_{}_xz_cloud+thermal+updraft.png".format(k)
                         )
                     )
-                    
-                    imageListContourYZ.append(
-                        os.path.join(
-                            os.path.join(folderTime, "contourCloud"), 
-                            "contour_{}_yz_cloud.png".format(k)
-                        )
-                    )
-                    imageListContourYZ.append(
-                        os.path.join(
-                            os.path.join(folderTime, "contourCloud"), 
-                            "contour_{}_yz_cloud+thermal.png".format(k)
-                        )
-                    )
-                    imageListContourYZ.append(
-                        os.path.join(
-                            os.path.join(folderTime, "contourCloud"), 
-                            "contour_{}_yz_cloud+thermal+updraft.png".format(k)
-                        )
-                    )
                 
                     makeGif("contour_{}_xz.gif".format(k), imageListContourXZ, folder=folderTime, delay=200)
-                    makeGif("contour_{}_yz.gif".format(k), imageListContourYZ, folder=folderTime, delay=200)
 
 if __name__ == "__main__":
-    timeInit = time.time()
-    
     # id = "LEM"
     id = "MONC"
     
     netcdfFile = ""
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
-    netcdfFile = "diagnostics_3d_ts_30000.nc"
+    netcdfFile = "diagnostics_3d_ts_32400.nc"
     
     main(generateGif=False, id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
     # main(generateGif=False, indicatorFunction="plumeEdge")
     # main(generateGif=False, indicatorFunction="plumeEdgeEntrain")
     # main(generateGif=False, indicatorFunction="plumeEdgeDetrain")
-    
-    
-    timeElapsed = time.time() - timeInit
-    print("Elapsed time: {timeElapsed:.2f}s")
