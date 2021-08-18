@@ -18,7 +18,7 @@ from src.plots.plotThermalContour import plotThermalContour
 
 
 @timeElapsed
-def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None):
+def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None, greyscale=False):
     
     # Fetch folders for code structure
     if id == "LEM":
@@ -55,6 +55,8 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
         
         # Create plots for each snapshot in time
         for n in range(len(les.t)):
+            print("\nProcessing timestep {} (t = {:.2f}hrs,  t = {:.1f}s)".format(n+1, float(les.t[n])/3600., float(les.t[n])))
+            
             folderTime = os.path.join(folder.outputs, "time_{}".format(int(les.t[n])))
             if not os.path.isdir(folderTime):
                 os.makedirs(folderTime)
@@ -86,11 +88,12 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
                     u=(snapshot.u.field-0*np.mean(snapshot.u.av))[k,:,:],
                     w=(snapshot.v.field-0*np.mean(snapshot.v.av))[k,:,:]
                 )'''
+            
             # Plot slices at fixed locations on the y-axis
             for j in imagesIndices:
                 layer = snapshot.y[j]*1e-3
-                title = "y = {:.2f}km (id={})".format(layer, j+1)
-                print("XZ layer {} ({})".format(j+1, title))
+                title = f"t = {float(les.t[n])/3600:.2f} hours, y = {layer:.2f} km"
+                print(f"XZ layer {j+1} ({title})")
                 
                 # Plot with only clouds
                 plotThermalContour(
@@ -100,7 +103,8 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
                     id="{}_xz_cloud".format(j),
                     title=title,
                     xlabel="x (km)",
-                    folder=folderTime
+                    folder=folderTime,
+                    greyscale=greyscale
                 )
                 
                 # Plot including structure of thermals below clouds
@@ -113,7 +117,8 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
                     title=title,
                     xlabel="x (km)",
                     folder=folderTime,
-                    I2=snapshot.I2.field[:,j,:]
+                    I2=snapshot.I2.field[:,j,:],
+                    greyscale=greyscale
                 )
                 
                 # Plot including regions of positive vertical velocity (updrafts)
@@ -126,7 +131,8 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
                     xlabel="x (km)",
                     folder=folderTime,
                     # u=(snapshot.v.field-snapshot.v.av[:,None,None])[:,j,:],
-                    w=snapshot.w.field[:,j,:]
+                    w=snapshot.w.field[:,j,:],
+                    greyscale=greyscale
                 )
                 
                 # Plot including structure of thermals and vertical velocity
@@ -139,7 +145,8 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
                     xlabel="x (km)",
                     folder=folderTime,
                     I2=snapshot.I2.field[:,j,:],
-                    w=snapshot.w.field[:,j,:]
+                    w=snapshot.w.field[:,j,:],
+                    greyscale=greyscale
                 )
                 
         
@@ -185,12 +192,14 @@ if __name__ == "__main__":
     # id = "LEM"
     id = "MONC"
     
-    netcdfFile = ""
+    netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
     netcdfFile = "diagnostics_3d_ts_32400.nc"
+    # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
-    main(generateGif=False, id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
-    # main(generateGif=False, indicatorFunction="plumeEdge")
-    # main(generateGif=False, indicatorFunction="plumeEdgeEntrain")
-    # main(generateGif=False, indicatorFunction="plumeEdgeDetrain")
+    indicatorFunction="plume"
+    # indicatorFunction="plumeEdge"
+    
+    main(id=id, indicatorFunction=indicatorFunction, netcdfFile=netcdfFile, greyscale=True)
+    main(id=id, indicatorFunction=indicatorFunction, netcdfFile=netcdfFile, greyscale=False)

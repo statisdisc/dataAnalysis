@@ -145,17 +145,17 @@ def plotVerticalProfile(
     )
     
     # Save vertical profiles in MATLAB readable format
+    name = field.name
     if id == "plumeEdge":
         savemat(
-            os.path.join(folderVertical, "z_{}.mat".format(field.name)), 
+            os.path.join(folderVertical, f"z_{name}.mat"), 
             {
                 "z": z,
-                "transfer12": field.fluid2,
-                "transfer21": field.fluid2
+                f"{name}_12": field.fluid2,
+                f"{name}_21": field.fluid2
             }
         )
     else:
-        name = field.name
         savemat(
             os.path.join(folderVertical, f"z_{name}.mat"), 
             {

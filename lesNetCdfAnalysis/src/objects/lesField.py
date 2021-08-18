@@ -114,8 +114,8 @@ class lesField:
             self.fluid2VarResolved = self.varianceResolved(self.fluid2)
             
             # Subfilter fluxes - The un-accounted-for flux not picked up by the resolved contribution
-            self.fluid1VarSubgrid = self.fluid1VarAll - self.fluid1VarResolved
-            self.fluid2VarSubgrid = self.fluid2VarAll - self.fluid2VarResolved
+            self.fluid1VarSubgrid = np.maximum(0, self.fluid1VarAll - self.fluid1VarResolved)
+            self.fluid2VarSubgrid = np.maximum(0, self.fluid2VarAll - self.fluid2VarResolved)
             
             # Standard deviations
             self.fluid1StdAll      = np.sqrt(self.fluid1VarAll)

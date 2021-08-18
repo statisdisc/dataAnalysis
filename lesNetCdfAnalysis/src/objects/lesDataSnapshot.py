@@ -33,17 +33,17 @@ class lesDataSnapshot:
         if self.keys.x in data.variables:
             self.x = data.variables[self.keys.x][:]*1
         else:
-            self.x = np.linspace(-1e4, 1e4, self.shape[self.keys.xi])
+            self.x = np.linspace(-9.575e3, 9.575e3, self.shape[self.keys.xi])
         
         if self.keys.y in data.variables:
             self.y = data.variables[self.keys.y][:]*1
         else:
-            self.y = np.linspace(-1e4, 1e4, self.shape[self.keys.yi])
+            self.y = np.linspace(-9.575e3, 9.575e3, self.shape[self.keys.yi])
         
         if self.keys.z in data.variables:
             self.z = data.variables[self.keys.z][:]*1
         else:
-            self.z = np.linspace(0, 4.4e3, self.shape[self.keys.zi])
+            self.z = np.linspace(2e1, 4.4e3, self.shape[self.keys.zi])
         
         # Grid spacings
         self.dx = np.abs(self.x - np.roll(self.x, 1))

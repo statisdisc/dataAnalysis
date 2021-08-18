@@ -320,8 +320,8 @@ def lesVerticalProfiles(id="LEM", indicatorFunction="basic", netcdfFile=None, th
             # )
 
 if __name__ == "__main__":
-    id = "LEM"
-    # id = "MONC"
+    # id = "LEM"
+    id = "MONC"
     
     netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
@@ -329,8 +329,8 @@ if __name__ == "__main__":
     # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
     # lesVerticalProfiles(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
-    lesVerticalProfiles(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
-    # lesVerticalProfiles(id=id, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
+    lesVerticalProfiles(id=id, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
     # lesVerticalProfiles(id=id, indicatorFunction="plumeEdgeEntrain", netcdfFile=netcdfFile)
     # lesVerticalProfiles(id=id, indicatorFunction="plumeEdgeDetrain", netcdfFile=netcdfFile)
     # lesVerticalProfiles(id=id, indicatorFunction="dbdz", netcdfFile=netcdfFile)
