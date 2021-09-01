@@ -31,8 +31,9 @@ def loadProfiles(filename, folder=""):
 @timeElapsed
 def prepareData(
         indicator = "plume", 
-        id = "MONC", 
-        times = [30000]
+        id        = "MONC", 
+        times     = [30000],
+        cloudData = True
     ):
     # Fetch folders for code structure
     folder = folders(
@@ -109,31 +110,41 @@ def prepareData(
                             axis = -1
                         )
     
-    print("Adding cloud timeseries as well")
-    folderCloud = os.path.join(folder.outputs, id, "cloudContour")
-    dataCloud = loadProfiles("cloud_fraction.mat", folder=folderCloud)
-    
-    for profile in dataCloud.keys():
-        if "__" not in profile:
-            profile_name = profile
-            # profile_name = f"LES_{profile}"
-            if profile_name not in dataAll:
-                dataAll[profile_name] = dataCloud[profile]
+    if cloudData:
+        print("Adding cloud timeseries as well")
+        folderCloud = os.path.join(folder.outputs, id, "cloudContour")
+        dataCloud = loadProfiles("cloud_fraction.mat", folder=folderCloud)
+        
+        for profile in dataCloud.keys():
+            if "__" not in profile:
+                profile_name = profile
+                # profile_name = f"LES_{profile}"
+                if profile_name not in dataAll:
+                    dataAll[profile_name] = dataCloud[profile]
     
     
     print("Data preparation complete for variables: {}".format(list(dataAll.keys())))
     
     
-    filenameOutput = os.path.join(folder.outputs, id, "profiles.mat")
-    savemat(filenameOutput, dataAll)
+    folderOutput = os.path.join(folder.outputs, id, indicator)
+    if not os.path.isdir(folderOutput):
+        os.makedirs(folderOutput)
+    savemat(os.path.join(folderOutput, "profiles.mat"), dataAll)
 
 if __name__ == "__main__":
+    # prepareData(
+        # id = "LEM",
+        # times = range(3800, 51800, 3600)
+    # )
+    
     prepareData(
-        id = "LEM",
-        times = range(3800, 51800, 3600)
+        id = "MONC",
+        times = range(3600, 51600, 3600)
     )
     
-    # prepareData(
-        # id = "MONC",
-        # times = range(3600, 51600, 3600)
-    # )
+    prepareData(
+        id = "MONC",
+        times = range(3600, 51600, 3600),
+        indicator = "plumeEdge",
+        cloudData = False
+    )
