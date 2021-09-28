@@ -45,7 +45,7 @@ def get1dProfiles(folderData, key=None):
     return dataAll
 
 @timeElapsed
-def lesVerticalProfiles(id="LEM", indicatorFunction="basic", netcdfFile=None, thetaMean=None):
+def lesVerticalProfiles(id="LEM", caseStudy="ARM", indicatorFunction="basic", netcdfFile=None, thetaMean=None):
     
     # Fetch folders for code structure
     if id == "LEM":
@@ -56,9 +56,9 @@ def lesVerticalProfiles(id="LEM", indicatorFunction="basic", netcdfFile=None, th
         )
     elif id == "MONC":
         folder = folders(
-            id = id,
+            id = f"{id}_{caseStudy}",
             folderScripts = os.path.dirname(os.path.realpath(__file__)),
-            folderData = "/mnt/c/MONC_ARM"
+            folderData = f"/mnt/c/{id}_{caseStudy}"
         )
         
         thetaMean = get1dProfiles(folder.data1d, key="theta_mean")
@@ -323,14 +323,17 @@ if __name__ == "__main__":
     # id = "LEM"
     id = "MONC"
     
+    caseStudy = "ARM"
+    caseStudy = "BOMEX"
+    
     netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
     # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
-    # lesVerticalProfiles(id=id, indicatorFunction="basic", netcdfFile=netcdfFile)
-    # lesVerticalProfiles(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
-    lesVerticalProfiles(id=id, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
-    # lesVerticalProfiles(id=id, indicatorFunction="plumeEdgeEntrain", netcdfFile=netcdfFile)
-    # lesVerticalProfiles(id=id, indicatorFunction="plumeEdgeDetrain", netcdfFile=netcdfFile)
-    # lesVerticalProfiles(id=id, indicatorFunction="dbdz", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, caseStudy=caseStudy, indicatorFunction="basic", netcdfFile=netcdfFile)
+    lesVerticalProfiles(id=id, caseStudy=caseStudy, indicatorFunction="plume", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, caseStudy=caseStudy, indicatorFunction="plumeEdge", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, caseStudy=caseStudy, indicatorFunction="plumeEdgeEntrain", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, caseStudy=caseStudy, indicatorFunction="plumeEdgeDetrain", netcdfFile=netcdfFile)
+    # lesVerticalProfiles(id=id, caseStudy=caseStudy, indicatorFunction="dbdz", netcdfFile=netcdfFile)

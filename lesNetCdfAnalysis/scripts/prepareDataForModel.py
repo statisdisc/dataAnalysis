@@ -32,6 +32,7 @@ def loadProfiles(filename, folder=""):
 def prepareData(
         indicator = "plume", 
         id        = "MONC", 
+        caseStudy = "ARM",
         times     = [30000],
         cloudData = True
     ):
@@ -41,6 +42,7 @@ def prepareData(
     )
     
     variables = ["sigma", "q", "ql", "qv", "th", "thv", "b", "u", "v", "w"]
+    # variables = ["ql", "qv", "th", "u", "w"]
     
     dataAll = dict(times=[])
     # dataAll = dict(LES_times=times)
@@ -49,9 +51,11 @@ def prepareData(
     for i,t in enumerate(times):
         print("Processing t={}s (timestep {} of {})".format(t, i+1, len(times)))
         
-        folderTimeMean      = os.path.join(folder.outputs, id,  "time_{}".format(times[i]),  "profilesMean",      indicator)
-        folderTimeVariances = os.path.join(folder.outputs, id,  "time_{}".format(times[i]),  "profilesVariances", indicator)
-        folderTimeFluxes    = os.path.join(folder.outputs, id,  "time_{}".format(times[i]),  "profilesFluxes",    indicator)
+        # idCaseStudy = f"{id}"
+        idCaseStudy = f"{id}_{caseStudy}"
+        folderTimeMean      = os.path.join(folder.outputs, idCaseStudy,  "time_{}".format(times[i]),  "profilesMean",      indicator)
+        folderTimeVariances = os.path.join(folder.outputs, idCaseStudy,  "time_{}".format(times[i]),  "profilesVariances", indicator)
+        folderTimeFluxes    = os.path.join(folder.outputs, idCaseStudy,  "time_{}".format(times[i]),  "profilesFluxes",    indicator)
         
         if os.path.isdir(folderTimeMean):
             dataAll["times"].append(t)
@@ -77,10 +81,10 @@ def prepareData(
                 data = {**data, **dataMean, **dataVariances, **dataFluxes}
             
             # Additional diagnostics
-            data["e_res1"] = data["uu_res1"] + data["vv_res1"] + data["ww_res1"]
-            data["e_res2"] = data["uu_res2"] + data["vv_res2"] + data["ww_res2"]
-            data["e_sg1"]  = data["uu_sg1"]  + data["vv_sg1"]  + data["ww_sg1"]
-            data["e_sg2"]  = data["uu_sg2"]  + data["vv_sg2"]  + data["ww_sg2"]
+            data["e_res1"] = 0.5*(data["uu_res1"] + data["vv_res1"] + data["ww_res1"])
+            data["e_res2"] = 0.5*(data["uu_res2"] + data["vv_res2"] + data["ww_res2"])
+            data["e_sg1"]  = 0.5*(data["uu_sg1"]  + data["vv_sg1"]  + data["ww_sg1"])
+            data["e_sg2"]  = 0.5*(data["uu_sg2"]  + data["vv_sg2"]  + data["ww_sg2"])
             data["e_1"]    = data["e_res1"]  + data["e_sg1"]
             data["e_2"]    = data["e_res2"]  + data["e_sg2"]
             data["e_res"]  = data["sigma_1"]*data["e_res1"] + data["sigma_2"]*data["e_res2"]
@@ -112,7 +116,7 @@ def prepareData(
     
     if cloudData:
         print("Adding cloud timeseries as well")
-        folderCloud = os.path.join(folder.outputs, id, "cloudContour")
+        folderCloud = os.path.join(folder.outputs, idCaseStudy, "cloudContour")
         dataCloud = loadProfiles("cloud_fraction.mat", folder=folderCloud)
         
         for profile in dataCloud.keys():
@@ -126,25 +130,32 @@ def prepareData(
     print("Data preparation complete for variables: {}".format(list(dataAll.keys())))
     
     
-    folderOutput = os.path.join(folder.outputs, id, indicator)
+    folderOutput = os.path.join(folder.outputs, idCaseStudy, indicator)
     if not os.path.isdir(folderOutput):
         os.makedirs(folderOutput)
     savemat(os.path.join(folderOutput, "profiles.mat"), dataAll)
 
 if __name__ == "__main__":
-    # prepareData(
-        # id = "LEM",
-        # times = range(3800, 51800, 3600)
-    # )
+    prepareData(
+        id = "LEM",
+        times = range(3800, 51800, 3600)
+    )
     
     prepareData(
         id = "MONC",
+        caseStudy = "ARM",
         times = range(3600, 51600, 3600)
     )
     
     prepareData(
         id = "MONC",
-        times = range(3600, 51600, 3600),
-        indicator = "plumeEdge",
-        cloudData = False
+        caseStudy = "BOMEX",
+        times = range(1800, 21600+1800, 1800)
     )
+    
+    # prepareData(
+        # id = "MONC",
+        # times = range(3600, 51600, 3600),
+        # indicator = "plumeEdge",
+        # cloudData = False
+    # )

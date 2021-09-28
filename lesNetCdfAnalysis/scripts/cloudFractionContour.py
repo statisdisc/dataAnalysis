@@ -29,7 +29,7 @@ def conditionalAverage(field, I, axis=(1,2)):
     return np.sum(field*I, axis=axis)/np.sum(I, axis=axis)
 
 @timeElapsed
-def cloudFractionContour(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None):
+def cloudFractionContour(generateGif=False, id="LEM", caseStudy="ARM", indicatorFunction="basic", netcdfFile=None):
     
     
     # Fetch folders for code structure
@@ -41,9 +41,9 @@ def cloudFractionContour(generateGif=False, id="LEM", indicatorFunction="basic",
         )
     elif id == "MONC":
         folder = folders(
-            id = id,
+            id = f"{id}_{caseStudy}",
             folderScripts = os.path.dirname(os.path.realpath(__file__)),
-            folderData = "/mnt/c/MONC_ARM"
+            folderData = f"/mnt/c/{id}_{caseStudy}"
         )
     else:
         raise ValueError(f"id {id} is not valid.")
@@ -192,11 +192,14 @@ def cloudFractionContour(generateGif=False, id="LEM", indicatorFunction="basic",
 
 if __name__ == "__main__":
     id = "LEM"
-    # id = "MONC"
+    id = "MONC"
+    
+    caseStudy = "ARM"
+    caseStudy = "BOMEX"
     
     netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
     # netcdfFile = "diagnostics_3d_ts_30000.nc"
     
-    cloudFractionContour(id=id, indicatorFunction="plume", netcdfFile=netcdfFile)
+    cloudFractionContour(id=id, caseStudy=caseStudy, indicatorFunction="plume", netcdfFile=netcdfFile)
