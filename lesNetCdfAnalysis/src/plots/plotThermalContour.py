@@ -51,12 +51,12 @@ def plotThermalContour(
         x, y, ql,
         showMesh = False,
         id = "", 
-        title = "", 
+        title = None, 
         xlabel = "",
         ylabel = "z (km)",
         xlim = [-9.575, 9.575],
         ylim = [0., 3.],
-        dpi = 200,
+        dpi = 300,
         folder = "", 
         I2 = None, 
         u = None, 
@@ -84,7 +84,7 @@ def plotThermalContour(
     fig, ax = plt.subplots(
         nrows   = 1, 
         ncols   = 1,
-        figsize = (int(xlim[1]-xlim[0]),2*int(ylim[1]-ylim[0]))
+        figsize = (int(0.7*(xlim[1]-xlim[0])),int(0.7*(ylim[1]-ylim[0])))
     )
     
     # Background colors

@@ -18,7 +18,33 @@ from src.plots.plotThermalContour import plotThermalContour
 
 
 @timeElapsed
-def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None, greyscale=False):
+def lesCloudContours(
+        id                = "LEM", 
+        caseStudy         = "ARM", 
+        indicatorFunction = "plume", 
+        netcdfFile        = None, 
+        interval          = 1,
+        generateGif       = False, 
+        greyscale         = False,
+        plotCloud         = False,
+        plotThermals      = True,
+        plotVelocity      = False,
+        plotAll           = False
+    ):
+    '''
+    Plot cross sections of clouds and their underlying structures.
+    
+    :param id: The simulation source type, set to either "ARM" or "MONC", str.
+    :param caseStudy: The name of the case study to be plot, str.
+    :param indicatorFunction: The type of structure to overlay onto the cloud, str.
+    :param netcdfFile: Specify the netcdf file to open (all files processed if none selected), str.
+    :param interval: Gap between layers to be plotted (1 means every layer plotted), int.
+    :param generateGif: Compose all generated images into an animation cycling through the layers, bool.
+    :param plotCloud: If True generate plot showing only the clouds, bool.
+    :param plotThermals: If True generate plot showing cloud and the chosen indicatorFunction, bool.
+    :param plotVelocity: If True generate plot showing cloud and the vertical velocity, bool.
+    :param plotAll: If True generate plot showing all the features above, bool.
+    '''
     
     # Fetch folders for code structure
     if id == "LEM":
@@ -29,9 +55,9 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
         )
     elif id == "MONC":
         folder = folders(
-            id = id,
+            id = f"{id}_{caseStudy}",
             folderScripts = os.path.dirname(os.path.realpath(__file__)),
-            folderData = "/mnt/c/MONC_ARM"
+            folderData = f"/mnt/c/{id}_{caseStudy}"
         )
     else:
         raise ValueError(f"id {id} is not valid. Use LEM or MONC.")
@@ -64,7 +90,7 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
             snapshot = les.data[n]
             
             # Which layers of the 3D data set do we want to plot?
-            imagesIndices = range(0, min(len(snapshot.x),len(snapshot.y)), 50)
+            imagesIndices = range(0, min(len(snapshot.x),len(snapshot.y)), interval)
             
             '''# Plot slices at fixed locations on the z-axis
             for k in range(0, len(snapshot.z), 10):
@@ -96,58 +122,61 @@ def main(generateGif=False, id="LEM", indicatorFunction="basic", netcdfFile=None
                 print(f"XZ layer {j+1} ({title})")
                 
                 # Plot with only clouds
-                plotThermalContour(
-                    snapshot.x*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,j,:],
-                    id="{}_xz_cloud".format(j),
-                    title=title,
-                    xlabel="x (km)",
-                    folder=folderTime,
-                    greyscale=greyscale
-                )
+                if plotCloud:
+                    plotThermalContour(
+                        snapshot.x*1e-3,
+                        snapshot.z*1e-3,
+                        snapshot.ql.field[:,j,:],
+                        id="{}_xz_cloud".format(j),
+                        title=title,
+                        xlabel="x (km)",
+                        folder=folderTime,
+                        greyscale=greyscale
+                    )
                 
                 # Plot including structure of thermals below clouds
-                plotThermalContour(
-                    snapshot.x*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,j,:],
-                    id="{}_xz_cloud+thermal".format(j),
-                    # id="{}_xz_cloud+thermal+edge".format(j),
-                    title=title,
-                    xlabel="x (km)",
-                    folder=folderTime,
-                    I2=snapshot.I2.field[:,j,:],
-                    greyscale=greyscale
-                )
+                if plotThermals:
+                    plotThermalContour(
+                        snapshot.x*1e-3,
+                        snapshot.z*1e-3,
+                        snapshot.ql.field[:,j,:],
+                        id="{}_xz_cloud+thermal".format(j),
+                        # title=title,
+                        xlabel="x (km)",
+                        folder=folderTime,
+                        I2=snapshot.I2.field[:,j,:],
+                        greyscale=greyscale
+                    )
                 
                 # Plot including regions of positive vertical velocity (updrafts)
-                plotThermalContour(
-                    snapshot.x*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,j,:],
-                    id="{}_xz_cloud+updraft".format(j),
-                    title=title,
-                    xlabel="x (km)",
-                    folder=folderTime,
-                    # u=(snapshot.v.field-snapshot.v.av[:,None,None])[:,j,:],
-                    w=snapshot.w.field[:,j,:],
-                    greyscale=greyscale
-                )
+                if plotVelocity:
+                    plotThermalContour(
+                        snapshot.x*1e-3,
+                        snapshot.z*1e-3,
+                        snapshot.ql.field[:,j,:],
+                        id="{}_xz_cloud+updraft".format(j),
+                        title=title,
+                        xlabel="x (km)",
+                        folder=folderTime,
+                        # u=(snapshot.v.field-snapshot.v.av[:,None,None])[:,j,:],
+                        w=snapshot.w.field[:,j,:],
+                        greyscale=greyscale
+                    )
                 
-                # Plot including structure of thermals and vertical velocity
-                plotThermalContour(
-                    snapshot.x*1e-3,
-                    snapshot.z*1e-3,
-                    snapshot.ql.field[:,j,:],
-                    id="{}_xz_cloud+thermal+updraft".format(j),
-                    title=title,
-                    xlabel="x (km)",
-                    folder=folderTime,
-                    I2=snapshot.I2.field[:,j,:],
-                    w=snapshot.w.field[:,j,:],
-                    greyscale=greyscale
-                )
+                # Plot including clouds, structure of thermals and vertical velocity
+                if plotAll:
+                    plotThermalContour(
+                        snapshot.x*1e-3,
+                        snapshot.z*1e-3,
+                        snapshot.ql.field[:,j,:],
+                        id="{}_xz_cloud+thermal+updraft".format(j),
+                        title=title,
+                        xlabel="x (km)",
+                        folder=folderTime,
+                        I2=snapshot.I2.field[:,j,:],
+                        w=snapshot.w.field[:,j,:],
+                        greyscale=greyscale
+                    )
                 
         
         
@@ -195,11 +224,12 @@ if __name__ == "__main__":
     netcdfFile = None
     # netcdfFile = "mov0235_ALL_01-_.nc"
     # netcdfFile = "mov0235_ALL_01-z.nc"
-    netcdfFile = "diagnostics_3d_ts_32400.nc"
-    # netcdfFile = "diagnostics_3d_ts_30000.nc"
+    netcdfFile = "diagnostics_3d_ts_10800.nc"
+    # netcdfFile = "diagnostics_3d_ts_21600.nc"
+    # netcdfFile = "diagnostics_3d_ts_32400.nc"
     
     indicatorFunction="plume"
     # indicatorFunction="plumeEdge"
     
-    main(id=id, indicatorFunction=indicatorFunction, netcdfFile=netcdfFile, greyscale=True)
-    main(id=id, indicatorFunction=indicatorFunction, netcdfFile=netcdfFile, greyscale=False)
+    lesCloudContours(id=id, indicatorFunction=indicatorFunction, netcdfFile=netcdfFile, greyscale=True)
+    # lesCloudContours(id=id, indicatorFunction=indicatorFunction, netcdfFile=netcdfFile, greyscale=False)

@@ -107,7 +107,8 @@ def plotVerticalProfile(
     ax0.plot(field.av,     zkm, "k", linewidth=1.)    
     
     # Limits and labels
-    ax0.set_xlim(field.min, field.max + field.max==0)
+    # ax0.set_xlim(field.min, field.max + field.max==0)
+    ax0.set_xlim(np.min((field.fluid1,field.fluid2)), np.max((field.fluid1,field.fluid2)))
     ax0.set_ylim(np.min(zkm), np.max(zkm))
     ax0.set_xlabel(xlabel)
     ax0.set_ylabel("z (km)")

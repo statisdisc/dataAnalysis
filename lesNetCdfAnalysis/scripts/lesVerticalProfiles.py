@@ -1,7 +1,3 @@
-'''
-Plot the vertical profiles of various fields in the Large Eddy Simulation (LES) data
-for comparison with Single Column Models (SCMs).
-'''
 import netCDF4
 import os
 import sys
@@ -45,7 +41,23 @@ def get1dProfiles(folderData, key=None):
     return dataAll
 
 @timeElapsed
-def lesVerticalProfiles(id="LEM", caseStudy="ARM", indicatorFunction="basic", netcdfFile=None, thetaMean=None):
+def lesVerticalProfiles(
+        id = "LEM", 
+        caseStudy = "ARM", 
+        indicatorFunction = "basic", 
+        netcdfFile = None, 
+        thetaMean = None
+    ):
+    '''
+    Plot the vertical profiles of various fields in the Large Eddy Simulation (LES) data
+    for comparison with Single Column Models (SCMs).
+    
+    :param id: The simulation source type, set to either "ARM" or "MONC", str.
+    :param caseStudy: The name of the case study to be plot, str.
+    :param indicatorFunction: The type of structure to overlay onto the cloud, str.
+    :param netcdfFile: Specify the netcdf file to open (all files processed if none selected), str.
+    :param thetaMean: Specify a background profile to add to the potential temperature, float np.ndarray.
+    '''
     
     # Fetch folders for code structure
     if id == "LEM":
