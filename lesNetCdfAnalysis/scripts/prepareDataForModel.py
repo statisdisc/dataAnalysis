@@ -136,16 +136,16 @@ def prepareData(
     savemat(os.path.join(folderOutput, "profiles.mat"), dataAll)
 
 if __name__ == "__main__":
-    prepareData(
-        id = "LEM",
-        times = range(3800, 51800, 3600)
-    )
+    # prepareData(
+        # id = "LEM",
+        # times = range(3800, 51800, 3600)
+    # )
     
-    prepareData(
-        id = "MONC",
-        caseStudy = "ARM",
-        times = range(3600, 51600, 3600)
-    )
+    # prepareData(
+        # id = "MONC",
+        # caseStudy = "ARM",
+        # times = range(3600, 51600, 3600)
+    # )
     
     prepareData(
         id = "MONC",
