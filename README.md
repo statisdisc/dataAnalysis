@@ -65,15 +65,20 @@ By splitting the data into clouds/thermals (red) and downdraft regions, we can s
 <br>&nbsp;<br>
 <br>&nbsp;<br>
 # steamMarketAnalysis - Annual variation of cases on the Steam Market
-Analysis and visualisation of item prices on the Steam Market to highlight trends and patterns. 
-The analysis shows some clear annual trends. The main conclusion is that it is advantageous to buy items in December and sell mid-Summer.
+The [Steam Market](https://steamcommunity.com/market/) is an online marketplace for non-fungible digital items. The market serves hundreds of games and software applications, and hosts millions of items worth several billion dollars in total. By analysing market trends for particular market segments, it is possible to predict long-term movements and trajectories of the market, making it easier to make a profit.
+
+The below analyses and visualisations are based on "cases" (which contain a variety of items, with differing probabilities of being "unboxed") for the game CS:GO. These cases are among the most popular items on the whole marketplace, where consumer demand often drives large spikes in prices.
 
 ## Prerequisites
 Python 2.7 with NumPy, SciPy and Matplotlib installed.
 
-## Output
+## Output and explanation
+The below bespoke graphic shows the mean case price (weighted by supply) over a 5-year period, as well as the price averaged over the entire 5-year period. The plots show a clear yearly cycle in the case market, which sees a minimum case price in November/December and a maximum case price (almost double the winter trough) in the Summer. This information has been extensively used in the CS:GO investing community to invest heavily in the Winter months and sell when the prices are likely to be highest in the Summer.
 <img src="/readmeImages/AnnualCaseVariation.png">
 
+<br>&nbsp;<br>
+So now we know about the general trajectory of case prices, but there are dozens of cases to chose from (and not all cases will result in a profit). The below bespoke visualisation summarises the trajectories of individual cases over a 30-day period, with the darker colours being the most recent price data. This visualisation can be used to easily assess the trajectory of prices and supply (and whether a particular case may be in a price bubble).
+<img src="/readmeImages/z_contour_reddit_post.png">
 
 
 <br>&nbsp;<br>
