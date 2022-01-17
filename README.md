@@ -94,7 +94,7 @@ These results are published in [McIntyre et al. (2020)](https://doi.org/10.1002/
 ## Prerequisites
 Python 2.7 with NumPy, SciPy and Matplotlib installed.
 
-## Outputs
+## Outputs and explanation
 
 <br>&nbsp;<br>
 <b>Momentum conservation properties</b>
@@ -115,5 +115,23 @@ Schemes with solid lines are energy-diminishing - an important property for stab
 
 <br>&nbsp;<br>
 <br>&nbsp;<br>
-# formulaOneMySqlAnalysis - Analysing results from all formula 1 seasons
-Images to be uploaded soon.
+# Using weather simulation data to tune a model
+Weather forecast simulations are made from a combination of models of various different processes (such as convection, boundary layer, lightning). Each of these models have parameters which need to be tuned to produce physically-reasonable results (such as a parameter to control the strength of air distributed by turbulent processes). But what if weather simulation data can be used to diagnose what these parameters should be?
+
+This project focussed on tuning coefficients which describe the exchange of air at the edges of convective clouds. The [two-fluid model of the atmosphere](https://github.com/MultiFluidSCM) requires more than 18 coefficients to model the this physical process in different layers of the atmosphere. 150 GB of weather data from [lesNetCdfAnalysis](https://github.com/statisdisc/dataAnalysis/tree/main/lesNetCdfAnalysis) are used to extract the properties (such as velocity, temperature, moisture) at the edges of the clouds, which can be substituted into a mathematical formula for the tunable model parameters. This data can then be used to set the model up for realistic simulations.
+
+The below analyses and visualisations can be accessed from MultiFluidSCM: [settings_graphics](https://github.com/MultiFluidSCM/settings_graphics) and [sensitivity_plotter](https://github.com/MultiFluidSCM/sensitivity_plotter) (note that some repositories may remain private for a few more months).
+
+## Outputs and explanation
+
+The below image firstly colour-codes some of the key regions in which the tunable parameters must be found:
+
+<img width="80%" src="/readmeImages/2fscm_tuning_regions.png">
+
+In these regions, the diagnosed values for the parameters are indicates in colour (and the black markers indicate the final values chosen for the [model](https://github.com/MultiFluidSCM), aided by a gradient descent algorithm).
+
+<img width="100%" src="/readmeImages/2fscm_tuning_settings.png">
+
+Another bespoke graphic below showcases the relative sensitivity of the model to the various tunable parameters (including those shown above). This data can be used to determine the most sensitive physical processes (which can lead to further future research) and/or can be fed into a gradient descent algorithm.
+
+<img width="100%" src="/readmeImages/2fscm_sensitivity.png">
